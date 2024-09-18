@@ -6,6 +6,7 @@ import loginImage from "../../assets/images/login_img.png";
 const LeftPanel = ({ sx, onSignUpModeClick }) => {
   return (
     <Box
+      component="div"
       sx={{
         width: "100%",
         textAlign: "center",
@@ -27,16 +28,18 @@ const LeftPanel = ({ sx, onSignUpModeClick }) => {
           transitionDelay: "0.6s",
         }}
       >
-        <Typography color="white" variant="h5">
+        <Typography color="white" variant="h4">
           Đã có tài khoản?
         </Typography>
-        <Typography variant="body1" color="white" mt={1} mb={1}>
+        <Typography color="white" mt={1} mb={1} sx={{
+          fontSize: "18px"
+        }}>
           Thực hiện đăng nhập
         </Typography>
         <RoundedButton
           onClick={onSignUpModeClick}
           variant="outlined"
-          sx={{ color: "white", borderColor: "white", mt: 1 }}
+          sx={{ color: "white", borderColor: "white", mt: 1, px: 5, fontSize: "16px" }}
         >
           Đăng nhập
         </RoundedButton>

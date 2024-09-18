@@ -27,16 +27,18 @@ const RightPanel = ({ sx, onLoginModeClick }) => {
           transitionDelay: "0.6s",
         }}
       >
-        <Typography color="white" variant="h5">
+        <Typography color="white" variant="h4">
           Chưa có tài khoản?
         </Typography>
-        <Typography variant="body1" color="white" mt={1} mb={1}>
+        <Typography variant="body1" sx={{
+          fontSize: "18px"
+        }} color="white" mt={1} mb={1}>
           Nhấn vào nút đăng ký để thực hiện đăng kí tài khoản
         </Typography>
         <RoundedButton
           onClick={onLoginModeClick}
           variant="outlined"
-          sx={{ color: "white", borderColor: "white", mt: 1 }}
+          sx={{ color: "white", borderColor: "white", mt: 1, px: 5, fontSize: "16px" }}
         >
           Đăng ký
         </RoundedButton>

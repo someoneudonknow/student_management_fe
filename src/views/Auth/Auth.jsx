@@ -4,7 +4,6 @@ import LoginForm from "../../components/AuthForm/LoginForm";
 import LeftPanel from "./LeftPanel";
 import RightPanel from "./RightPanel";
 import { useState } from "react";
-import authViewBg from "../../assets/images/auth_view_bg.jpg";
 
 export const authFormMode = {
   LOGIN: "login",
@@ -12,7 +11,6 @@ export const authFormMode = {
 };
 
 const Auth = () => {
-  const theme = useTheme();
   const [mode, setMode] = useState(authFormMode.LOGIN);
 
   const handleLoginModeClicked = () => {
@@ -25,6 +23,7 @@ const Auth = () => {
 
   return (
     <Box
+      component="div"
       sx={{
         minHeight: "100vh",
         width: "100%",
