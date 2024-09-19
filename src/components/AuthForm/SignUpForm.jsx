@@ -1,16 +1,27 @@
 import { useForm } from "react-hook-form";
 import FormTextInput from "../FormTextInput/FormTextInput";
-import { Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import LoadingButton from "../UI/LoadingButton";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
+import { useState } from "react";
 
 const SignUpForm = ({ sx }) => {
   const { control, handleSubmit } = useForm();
+  const [showPass, setShowPass] = useState(false);
+  const [showPassConfirm, setShowPassConfirm] = useState(false)
 
   const handleSignUp = async (values) => {
     console.log(values);
   };
+
+  const toggleShowPassword = () => {
+    setShowPass(prev => !prev)
+  }
+
+  const toggleShowPasswordConfirm = () => {
+    setShowPassConfirm(prev => !prev)
+  }
 
   return (
     <FormWrapper
@@ -27,7 +38,7 @@ const SignUpForm = ({ sx }) => {
         }}
         variant="h4"
       >
-        Sign Up
+        Đăng ký
       </Typography>
       <FormTextInput
         name="username"
@@ -37,7 +48,7 @@ const SignUpForm = ({ sx }) => {
         }}
         textFieldProps={{
           sx: { mt: 1 },
-          label: "Username",
+          label: "Tên đăng nhập",
           fullWidth: true,
         }}
         startIcon={<AccountCircle />}
@@ -46,27 +57,45 @@ const SignUpForm = ({ sx }) => {
         name="password"
         control={control}
         rules={{
-          required: "Please enter your username",
+          required: "Vui lòng nhập mật khẩu",
+          minLength: {
+            value: 6,
+            message: "Mật khẩu tối thiểu 6 kí tự"
+          }
         }}
         textFieldProps={{
           sx: { mt: 3 },
           fullWidth: true,
-          label: "Password",
+          label: "Mật khẩu",
+          type: showPass ? "text" : "password"
         }}
-        startIcon={<AccountCircle />}
+        startIcon={<Key />}
+        endIcon={
+          <IconButton onClick={toggleShowPassword}>
+            {showPass ? <Visibility /> : <VisibilityOff />}
+          </IconButton>}
       />
       <FormTextInput
-        name="password"
+        name="password-confirm"
         control={control}
         rules={{
-          required: "Please enter your username",
+          required: "Vui lòng xác nhập mật khẩu",
+          minLength: {
+            value: 6,
+            message: "Mật khẩu tối thiểu 6 kí tự"
+          }
         }}
         textFieldProps={{
           sx: { mt: 3 },
           fullWidth: true,
-          label: "Password",
+          label: "Xác nhận mật khẩu",
+          type: showPassConfirm ? "text" : "password"
         }}
-        startIcon={<AccountCircle />}
+        startIcon={<Key />}
+        endIcon={
+          <IconButton onClick={toggleShowPasswordConfirm}>
+            {showPassConfirm ? <Visibility /> : <VisibilityOff />}
+          </IconButton>}
       />
       <LoadingButton
         sx={{ mt: "80px", py: 1.5 }}

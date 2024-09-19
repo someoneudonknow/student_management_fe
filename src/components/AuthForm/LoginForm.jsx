@@ -1,16 +1,22 @@
 import { useForm } from "react-hook-form";
 import FormTextInput from "../FormTextInput/FormTextInput";
-import { Link, Typography } from "@mui/material";
+import { IconButton, Link, Typography } from "@mui/material";
 import LoadingButton from "../UI/LoadingButton";
-import { AccountCircle } from "@mui/icons-material";
+import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
+import { useState } from "react";
 
 const LoginForm = ({ sx }) => {
   const { control, handleSubmit } = useForm();
+  const [showPass, setShowPass] = useState(false);
 
   const handleLogin = async (values) => {
     console.log(values);
   };
+
+  const toggleShowPassword = () => {
+    setShowPass(prev => !prev)
+  }
 
   return (
     <FormWrapper
@@ -27,17 +33,17 @@ const LoginForm = ({ sx }) => {
         }}
         variant="h4"
       >
-        Login
+        Đăng nhập
       </Typography>
       <FormTextInput
         name="username"
         control={control}
         rules={{
-          required: "Please enter your username",
+          required: "Vui lòng nhập tên đăng nhập",
         }}
         textFieldProps={{
           sx: { mt: 1 },
-          label: "Username",
+          label: "Tên đăng nhập",
           fullWidth: true,
         }}
         startIcon={<AccountCircle />}
@@ -46,14 +52,23 @@ const LoginForm = ({ sx }) => {
         name="password"
         control={control}
         rules={{
-          required: "Please enter your username",
+          required: "Vui lòng nhập mật khẩu",
+          minLength: {
+            value: 6,
+            message: "Mật khẩu tối thiểu 6 kí tự"
+          }
         }}
         textFieldProps={{
           sx: { mt: 3 },
           fullWidth: true,
-          label: "Password",
+          label: "Mật khẩu",
+          type: showPass ? "text" : "password"
         }}
-        startIcon={<AccountCircle />}
+        startIcon={<Key />}
+        endIcon={
+          <IconButton onClick={toggleShowPassword}>
+            {showPass ? <Visibility /> : <VisibilityOff />}
+          </IconButton>}
       />
       <Typography
         variant="body2"

@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import { AUTH_ROUTES, ADMIN_ROUTES } from "./routesDefinitions";
 import AppRoot from "../views/Roots/AppRoot";
 import Error from "../views/Error/Error";
@@ -11,6 +11,9 @@ const appRoutes = createBrowserRouter([
     children: [
       {
         index: true,
+        element: <Navigate to="admin" />
+      },
+      {
         path: "auth",
         ...AUTH_ROUTES,
       },

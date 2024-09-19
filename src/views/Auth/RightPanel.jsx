@@ -33,7 +33,7 @@ const RightPanel = ({ sx, onLoginModeClick }) => {
         <Typography variant="body1" sx={{
           fontSize: "18px"
         }} color="white" mt={1} mb={1}>
-          Nhấn vào nút đăng ký để thực hiện đăng kí tài khoản
+          Thực hiện đăng kí tài khoản
         </Typography>
         <RoundedButton
           onClick={onLoginModeClick}

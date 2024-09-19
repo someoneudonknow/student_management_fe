@@ -1,10 +1,11 @@
 import { Navigate } from "react-router-dom";
+import { useUser } from "../../contexts/UserProvider/UserProvider";
 
 const ProtectedRoute = ({ children }) => {
-  const isAuth = true;
+  const { data } = useUser()
 
-  if (!isAuth) {
-    return <Navigate to="auth" />;
+  if (!data?.user) {
+    return <Navigate to="/auth" />;
   }
 
   return children

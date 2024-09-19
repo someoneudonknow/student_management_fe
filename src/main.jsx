@@ -7,11 +7,14 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "./global/global.css";
 import ThemeProvider from "./contexts/ThemeProvider/ThemeProvider.jsx";
+import UserProvider from "./contexts/UserProvider/UserProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-     <ThemeProvider>
-      <App />
-     </ThemeProvider>
+    <ThemeProvider>
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </ThemeProvider>
   </StrictMode>
 );
