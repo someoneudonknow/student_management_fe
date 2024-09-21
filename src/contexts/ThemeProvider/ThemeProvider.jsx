@@ -1,9 +1,11 @@
-import { createTheme, CssBaseline, useMediaQuery, ThemeProvider as MuiThemeProvider} from "@mui/material";
-import { createContext, useEffect, useMemo, useState } from "react";
+import { createTheme, CssBaseline, useMediaQuery, ThemeProvider as MuiThemeProvider } from "@mui/material";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { DEFAULT } from "../../constants/themesName";
 import { themes } from "./theme";
 
 const ThemeContext = createContext({
+  mode: null,
+  theme: null,
   toggleMode: () => { },
   setTheme: () => { },
 });
@@ -21,6 +23,8 @@ const ThemeProvider = ({ children }) => {
 
   const _contextValue = useMemo(
     () => ({
+      mode: mode,
+      theme: theme,
       toggleMode: () => {
         setMode((prev) => (prev === "dark" ? "light" : "dark"));
       },
@@ -30,7 +34,7 @@ const ThemeProvider = ({ children }) => {
         }
       },
     }),
-    [],
+    [mode, theme],
   );
 
   return (
@@ -42,5 +46,7 @@ const ThemeProvider = ({ children }) => {
     </ThemeContext.Provider>
   );
 };
+
+export const useAppTheme = () => useContext(ThemeContext)
 
 export default ThemeProvider;
