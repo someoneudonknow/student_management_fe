@@ -2,9 +2,9 @@ import axios from "axios";
 
 const HTTP_TIMEOUT = 10 * 1000;
 const HTTP_TIMEOUT_MESSAGE = "Yêu cầu quá hạn"
-const ACCESS_TOKEN = "access-token"
+const ACCESS_TOKEN = "authorization"
 const REFRESH_TOKEN = "resfresh-token"
-const CLIENT_ID = "client-id"
+const CLIENT_ID = "x-client-id"
 
 class BaseService {
   http;
@@ -15,7 +15,7 @@ class BaseService {
     this.baseUrl = baseUrl
     this.configHeaders = configHeaders
     this.http = axios.create({
-      url: baseUrl,
+      baseURL: baseUrl,
       timeout: HTTP_TIMEOUT,
       timeoutErrorMessage: HTTP_TIMEOUT_MESSAGE
     })
@@ -24,7 +24,6 @@ class BaseService {
       (response) => response,
       (error) => {
         const { response } = error
-
         if (response) {
           switch (response.status) {
             case 401:

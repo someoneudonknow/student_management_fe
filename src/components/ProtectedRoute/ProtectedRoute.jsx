@@ -4,7 +4,7 @@ import { useUser } from "../../contexts/UserProvider/UserProvider";
 const ProtectedRoute = ({ children }) => {
   const { data } = useUser()
 
-  if (!data?.user && false) {
+  if (!data?.user) {
     return <Navigate to="/auth" />;
   }
 
