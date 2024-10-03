@@ -10,9 +10,9 @@ export const SIDE_BAR_ITEMS = [
   {
     title: "Quản lý học sinh",
     icon: <People />,
-    children: [
+    childrens: [
       {
-        title: "Thêm học sinh", // includes adding protectors
+        title: "Thêm học sinh",
         path: "/admin/students/add"
       },
       {

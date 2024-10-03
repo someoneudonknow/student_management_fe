@@ -8,13 +8,23 @@ import "@fontsource/roboto/700.css";
 import "./global/global.css";
 import ThemeProvider from "./contexts/ThemeProvider/ThemeProvider.jsx";
 import UserProvider from "./contexts/UserProvider/UserProvider.jsx";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider.js";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { SnackbarProvider } from "notistack";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider>
-      <UserProvider>
-        <App />
-      </UserProvider>
-    </ThemeProvider>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
+      <ThemeProvider>
+        <SnackbarProvider
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <UserProvider>
+            <App />
+          </UserProvider>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </LocalizationProvider>
   </StrictMode>
 );
