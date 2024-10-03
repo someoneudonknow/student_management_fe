@@ -17,30 +17,21 @@ const CreateStudentForm = () => {
   const [province, setProvince] = useState(null);
   const [district, setDistrict] = useState(null);
   useEffect(() => {
-    // fetch("https://esgoo.net/api-tinhthanh/1/0.htm", {
-    //   method: "GET",
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setProvinceAdd(data.data);
-    //   });
     (async () => {
       const provinces = await getProvinces();
-      console.log(provinces);
+      setProvinceAdd(provinces.data);
     })();
   }, []);
-  const handleOpenDistrict = (e, val) => {
+  const handleOpenDistrict = async (e, val) => {
     setProvince(val.id);
-    fetch(`https://esgoo.net/api-tinhthanh/2/${val.id}.htm`)
-      .then((res) => res.json())
-      .then((data) => setDistrictAdd(data.data));
+    const districts = await getDistricts(val.id);
+    setDistrictAdd(districts.data);
   };
 
-  const handleOpenWard = (e, val) => {
+  const handleOpenWard = async (e, val) => {
     setDistrict(val.id);
-    fetch(`https://esgoo.net/api-tinhthanh/3/${val.id}.htm`)
-      .then((res) => res.json())
-      .then((data) => setWardAdd(data.data));
+    const wards = await getWards(val.id);
+    setWardAdd(wards.data);
   };
   const onSubmit = (data) => console.log(data);
 
@@ -144,7 +135,7 @@ const CreateStudentForm = () => {
             disabled={!district}
             control={control}
             rules={{ required: "Vui lòng chọn phường/ xã" }}
-            options={districtAdd}
+            options={wardAdd}
             label="full_name"
             displayLabel={"Phường/ xã"}
             handleSetState={(e, val) => handleOpenWard(e, val)}
