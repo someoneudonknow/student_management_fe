@@ -1,12 +1,13 @@
 import { Box, Button, CircularProgress } from "@mui/material";
 
-const LoadingButton = ({ loading, children, fullWidth, ...rest }) => {
+const LoadingButton = ({ loading, children, fullWidth, wrapperSx, ...rest }) => {
   return (
     <Box
       sx={{
         position: "relative",
         display: "inline-block",
         width: fullWidth ? "100%" : "auto",
+        ...wrapperSx
       }}
     >
       <Button disabled={loading} fullWidth={fullWidth} {...rest}>

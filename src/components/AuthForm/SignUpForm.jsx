@@ -2,17 +2,27 @@ import { useForm } from "react-hook-form";
 import FormTextInput from "../FormTextInput/FormTextInput";
 import { IconButton, Typography } from "@mui/material";
 import LoadingButton from "../UI/LoadingButton";
-import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
+import { AccountCircle, AlternateEmail, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
 import { useState } from "react";
+import { notEmailRegex } from "../../constants/regex";
+import { useUser } from "../../contexts/UserProvider/UserProvider";
 
 const SignUpForm = ({ sx }) => {
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, watch } = useForm();
   const [showPass, setShowPass] = useState(false);
   const [showPassConfirm, setShowPassConfirm] = useState(false)
+  const { isLoading, signUp } = useUser()
+  const password = watch("password")
 
   const handleSignUp = async (values) => {
-    console.log(values);
+    const data = {
+      userName: values.username,
+      password: values.password,
+      email: values.email
+    }
+
+    await signUp(data)
   };
 
   const toggleShowPassword = () => {
@@ -44,7 +54,11 @@ const SignUpForm = ({ sx }) => {
         name="username"
         control={control}
         rules={{
-          required: "Please enter your username",
+          required: "Vui lòng nhập tên đăng nhập",
+          maxLength: {
+            value: 50,
+            message: "Tên đăng nhập không được vượt quá 50 kí tự"
+          }
         }}
         textFieldProps={{
           sx: { mt: 1 },
@@ -52,6 +66,23 @@ const SignUpForm = ({ sx }) => {
           fullWidth: true,
         }}
         startIcon={<AccountCircle />}
+      />
+      <FormTextInput
+        name="email"
+        control={control}
+        rules={{
+          required: "Vui lòng nhập email",
+          pattern: {
+            value: notEmailRegex,
+            message: "Địa chỉ email không hợp lệ"
+          }
+        }}
+        textFieldProps={{
+          sx: { mt: 1 },
+          label: "Email",
+          fullWidth: true,
+        }}
+        startIcon={<AlternateEmail />}
       />
       <FormTextInput
         name="password"
@@ -83,6 +114,9 @@ const SignUpForm = ({ sx }) => {
           minLength: {
             value: 6,
             message: "Mật khẩu tối thiểu 6 kí tự"
+          },
+          validate: {
+            isEqualPass: value => value === password || "Mật khẩu xác nhận không trùng khớp"
           }
         }}
         textFieldProps={{
@@ -98,7 +132,9 @@ const SignUpForm = ({ sx }) => {
           </IconButton>}
       />
       <LoadingButton
-        sx={{ mt: "80px", py: 1.5 }}
+        loading={isLoading}
+        wrapperSx={{ mt: "80px" }}
+        sx={{ py: 1.5 }}
         type="submit"
         variant="contained"
         fullWidth
