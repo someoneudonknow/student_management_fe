@@ -6,6 +6,7 @@ import Error from "./views/Error/Error.jsx"
 import NotFound from "./views/NotFound/NotFound.jsx";
 
 function App() {
+
   return (
     <Routes>
       <Route path="/" element={<AppRoot />} errorElement={<Error />}>

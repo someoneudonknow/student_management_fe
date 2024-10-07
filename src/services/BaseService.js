@@ -34,7 +34,10 @@ class BaseService {
 
               window.location.reload()
               return Promise.reject(error)
-            default: return Promise.reject(error)
+            default: return Promise.reject({
+              error: error,
+              message: error?.response.data.message || error?.message
+            })
           }
         }
       }
@@ -45,8 +48,6 @@ class BaseService {
     const accessToken = Cookies.get(ACCESS_TOKEN_KEY) || ""
     const refreshToken = Cookies.get(REFRESH_TOKEN_KEY) || ""
     const clientId = Cookies.get(CLIENT_ID_KEY) || ""
-
-    console.log({ accessToken, refreshToken, clientId })
 
     const configs = {
       headers: {

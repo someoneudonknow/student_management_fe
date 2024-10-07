@@ -26,17 +26,6 @@ const CustomAppBar = styled(AppBar, {
   ...(open && { width: `calc(100% - ${SIDE_BAR_WIDTH})`, ml: `${SIDE_BAR_WIDTH}` }),
 }))
 
-const SETTINGS = [
-  {
-    title: "Profile",
-    icon: <AccountBox />
-  },
-  {
-    title: "Logout",
-    icon: <Logout />
-  }
-]
-
 const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
   const { data, logout } = useUser()
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -106,7 +95,7 @@ const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <Fragment key={setting.title}>
+                <div key={setting.title}>
                   {setting.title === "Logout" && <Divider />}
                   <MenuItem sx={{ minWidth: "200px" }} onClick={setting.handler}>
                     <ListItemIcon>
@@ -114,7 +103,7 @@ const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
                     </ListItemIcon>
                     <Typography sx={{ textAlign: 'center' }}>{setting.title}</Typography>
                   </MenuItem>
-                </Fragment>
+                </div>
               ))}
             </Menu>
           </Box>
