@@ -5,13 +5,20 @@ import LoadingButton from "../UI/LoadingButton";
 import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
 import { useState } from "react";
+import { useUser } from "../../contexts/UserProvider/UserProvider";
 
 const LoginForm = ({ sx }) => {
   const { control, handleSubmit } = useForm();
   const [showPass, setShowPass] = useState(false);
+  const { login, isLoading } = useUser()
 
-  const handleLogin = async (values) => {
-    console.log(values);
+  const handleLogin = async ({ username, password }) => {
+    const data = {
+      identifier: username,
+      password
+    }
+
+    await login(data)
   };
 
   const toggleShowPassword = () => {
@@ -81,7 +88,8 @@ const LoginForm = ({ sx }) => {
       </Typography>
 
       <LoadingButton
-        sx={{ mt: "80px", py: 1.5 }}
+        loading={isLoading}
+        wrapperSx={{ mt: "80px", py: 1.5 }}
         type="submit"
         variant="contained"
         fullWidth
