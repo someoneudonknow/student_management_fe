@@ -20,11 +20,11 @@ class AuthService extends BaseService {
   }
 
   async forgotPassword({ email }) {
-
+    return await this.post("/forgot-password", { email })
   }
 
   async resetPassword({ otp, uid, newPassword }) {
-
+    return await this.post("/reset-password", { otp, id: uid, password: newPassword })
   }
 }
 

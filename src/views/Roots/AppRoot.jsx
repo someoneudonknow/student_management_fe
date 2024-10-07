@@ -14,9 +14,7 @@ const AppRoot = () => {
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
           <UserProvider>
-            <main>
-              <Outlet />
-            </main>
+            <Outlet />
           </UserProvider>
         </SnackbarProvider>
       </ThemeProvider>

@@ -1,15 +1,16 @@
 import { useForm } from "react-hook-form";
 import FormTextInput from "../FormTextInput/FormTextInput";
-import { IconButton, Link, Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import LoadingButton from "../UI/LoadingButton";
 import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
 import { useState } from "react";
 import { useUser } from "../../contexts/UserProvider/UserProvider";
+import { Link, useNavigate } from "react-router-dom";
+import FormPasswordInput from "../FormPasswordInput/FormPasswordInput";
 
 const LoginForm = ({ sx }) => {
   const { control, handleSubmit } = useForm();
-  const [showPass, setShowPass] = useState(false);
   const { login, isLoading } = useUser()
 
   const handleLogin = async ({ username, password }) => {
@@ -20,10 +21,6 @@ const LoginForm = ({ sx }) => {
 
     await login(data)
   };
-
-  const toggleShowPassword = () => {
-    setShowPass(prev => !prev)
-  }
 
   return (
     <FormWrapper
@@ -55,9 +52,9 @@ const LoginForm = ({ sx }) => {
         }}
         startIcon={<AccountCircle />}
       />
-      <FormTextInput
-        name="password"
+      <FormPasswordInput
         control={control}
+        name="password"
         rules={{
           required: "Vui lòng nhập mật khẩu",
           minLength: {
@@ -66,16 +63,8 @@ const LoginForm = ({ sx }) => {
           }
         }}
         textFieldProps={{
-          sx: { mt: 3 },
-          fullWidth: true,
-          label: "Mật khẩu",
-          type: showPass ? "text" : "password"
+          sx: { mt: 3 }
         }}
-        startIcon={<Key />}
-        endIcon={
-          <IconButton onClick={toggleShowPassword}>
-            {showPass ? <Visibility /> : <VisibilityOff />}
-          </IconButton>}
       />
       <Typography
         variant="body2"
@@ -84,9 +73,8 @@ const LoginForm = ({ sx }) => {
         width="100%"
         mt={2}
       >
-        <Link>Quên mật khẩu?</Link>
+        <Link to="/auth/forgot-password">Quên mật khẩu?</Link>
       </Typography>
-
       <LoadingButton
         loading={isLoading}
         wrapperSx={{ mt: "80px", py: 1.5 }}

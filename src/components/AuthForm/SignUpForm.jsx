@@ -5,7 +5,7 @@ import LoadingButton from "../UI/LoadingButton";
 import { AccountCircle, AlternateEmail, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
 import { useState } from "react";
-import { notEmailRegex } from "../../constants/regex";
+import { NOT_EMAIL_REGEX } from "../../constants/regex";
 import { useUser } from "../../contexts/UserProvider/UserProvider";
 
 const SignUpForm = ({ sx }) => {
@@ -73,7 +73,7 @@ const SignUpForm = ({ sx }) => {
         rules={{
           required: "Vui lòng nhập email",
           pattern: {
-            value: notEmailRegex,
+            value: NOT_EMAIL_REGEX,
             message: "Địa chỉ email không hợp lệ"
           }
         }}

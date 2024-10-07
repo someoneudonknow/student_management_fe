@@ -25,8 +25,6 @@ const UserProvider = ({ children }) => {
           break;
         default: navigate("/auth")
       }
-    } else {
-      navigate("/auth")
     }
   }, [userState])
 
@@ -43,8 +41,7 @@ const UserProvider = ({ children }) => {
 
       enqueueSnackbar(message, { variant: "success" })
     } catch (e) {
-      const message = e?.response.data.message || e?.message;
-      enqueueSnackbar(message, { variant: "error" })
+      enqueueSnackbar(e.message, { variant: "error" })
     } finally {
       setIsLoading(false)
     }
@@ -63,8 +60,7 @@ const UserProvider = ({ children }) => {
 
       enqueueSnackbar(message, { variant: "success" })
     } catch (e) {
-      const message = e?.response.data.message || e?.message;
-      enqueueSnackbar(message, { variant: "error" })
+      enqueueSnackbar(e.message, { variant: "error" })
     } finally {
       setIsLoading(false)
     }
@@ -78,8 +74,7 @@ const UserProvider = ({ children }) => {
 
       dispatch({ type: userActions.RESET })
     } catch (e) {
-      const message = e?.response.data.message || e?.message;
-      enqueueSnackbar(message, { variant: "error" })
+      enqueueSnackbar(e.message, { variant: "error" })
     } finally {
       setIsLoading(false)
     }
