@@ -1,9 +1,10 @@
 import styled from "@emotion/styled"
-import { useTheme } from "@mui/material"
-import { AppBar, Divider, IconButton, Toolbar, Typography } from "@mui/material"
+import { AppBar, Avatar, Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Stack, Toolbar, Tooltip, Typography } from "@mui/material"
 import { SIDE_BAR_WIDTH } from "../constants"
-import { Close, MenuOpen } from "@mui/icons-material"
+import { AccountBox, Close, Logout, MenuOpen } from "@mui/icons-material"
 import ThemeSwitchButton from "../../../ThemeSwitchButton/ThemeSwitchButton"
+import { useUser } from "../../../../contexts/UserProvider/UserProvider"
+import { Fragment, useMemo, useState } from "react"
 
 const CustomAppBar = styled(AppBar, {
   shouldForwardProp: prop => prop !== "open"
@@ -25,7 +26,29 @@ const CustomAppBar = styled(AppBar, {
   ...(open && { width: `calc(100% - ${SIDE_BAR_WIDTH})`, ml: `${SIDE_BAR_WIDTH}` }),
 }))
 
+const SETTINGS = [
+  {
+    title: "Profile",
+    icon: <AccountBox />
+  },
+  {
+    title: "Logout",
+    icon: <Logout />
+  }
+]
+
 const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
+  const { data, logout } = useUser()
+  const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
   const handleToggleSideBar = () => {
     if (open) {
       handleSideBarClose()
@@ -34,13 +57,68 @@ const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
     }
   }
 
+  const settings = useMemo(() => {
+    return [
+      {
+        title: "Profile",
+        icon: <AccountBox />
+      },
+      {
+        title: "Logout",
+        icon: <Logout />,
+        handler: async () => {
+          await logout()
+        }
+      }
+    ]
+  }, [])
+
   return (
     <CustomAppBar position="fixed" open={open}>
-      <Toolbar>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <IconButton onClick={handleToggleSideBar} edge="start" aria-label="open drawer">
           {!open ? <MenuOpen /> : <Close />}
         </IconButton>
-        <ThemeSwitchButton />
+        <Stack direction="row" sx={{ display: "flex", columnGap: "10px" }}>
+          <ThemeSwitchButton />
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar src={data?.user?.avatar}>
+                  {data?.user?.user_name.charAt(0)}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="settings-menu"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={!!anchorElUser}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <Fragment key={setting.title}>
+                  {setting.title === "Logout" && <Divider />}
+                  <MenuItem sx={{ minWidth: "200px" }} onClick={setting.handler}>
+                    <ListItemIcon>
+                      {setting.icon}
+                    </ListItemIcon>
+                    <Typography sx={{ textAlign: 'center' }}>{setting.title}</Typography>
+                  </MenuItem>
+                </Fragment>
+              ))}
+            </Menu>
+          </Box>
+        </Stack>
       </Toolbar>
       <Divider />
     </CustomAppBar>

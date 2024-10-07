@@ -1,10 +1,9 @@
 import axios from "axios";
+import Cookies from "js-cookie"
+import { ACCESS_TOKEN_KEY, CLIENT_ID_KEY, REFRESH_TOKEN_KEY } from "../constants/keys";
 
 const HTTP_TIMEOUT = 10 * 1000;
 const HTTP_TIMEOUT_MESSAGE = "Yêu cầu quá hạn"
-const ACCESS_TOKEN = "authorization"
-const REFRESH_TOKEN = "resfresh-token"
-const CLIENT_ID = "x-client-id"
 
 class BaseService {
   http;
@@ -28,12 +27,13 @@ class BaseService {
           switch (response.status) {
             case 401:
               // unauthorize
-              localStorage.clear()
               window.location.reload()
-              break
+              return Promise.reject(error)
             case 403:
               // forbidden
-              break;
+
+              window.location.reload()
+              return Promise.reject(error)
             default: return Promise.reject(error)
           }
         }
@@ -42,16 +42,18 @@ class BaseService {
   }
 
   getConfigHeaders() {
-    const accessToken = localStorage.getItem(ACCESS_TOKEN) || ""
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN) || ""
-    const clientId = localStorage.getItem(CLIENT_ID) || ""
+    const accessToken = Cookies.get(ACCESS_TOKEN_KEY) || ""
+    const refreshToken = Cookies.get(REFRESH_TOKEN_KEY) || ""
+    const clientId = Cookies.get(CLIENT_ID_KEY) || ""
+
+    console.log({ accessToken, refreshToken, clientId })
 
     const configs = {
       headers: {
         "Content-Type": "application/json",
-        [ACCESS_TOKEN]: accessToken,
-        [REFRESH_TOKEN]: refreshToken,
-        [CLIENT_ID]: clientId
+        [ACCESS_TOKEN_KEY]: accessToken,
+        [REFRESH_TOKEN_KEY]: refreshToken,
+        [CLIENT_ID_KEY]: clientId
       },
       ...this.configHeaders
     }

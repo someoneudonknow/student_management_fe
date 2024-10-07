@@ -11,7 +11,7 @@ const appRoutes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="admin" />
+        element: <Navigate to="auth" />
       },
       {
         path: "auth",
