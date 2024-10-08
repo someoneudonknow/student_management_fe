@@ -4,7 +4,7 @@ import { SIDE_BAR_WIDTH } from "../constants"
 import { AccountBox, Close, Logout, MenuOpen } from "@mui/icons-material"
 import ThemeSwitchButton from "../../../ThemeSwitchButton/ThemeSwitchButton"
 import { useUser } from "../../../../contexts/UserProvider/UserProvider"
-import { Fragment, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 const CustomAppBar = styled(AppBar, {
   shouldForwardProp: prop => prop !== "open"
