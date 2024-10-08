@@ -1,12 +1,11 @@
 import { useForm } from "react-hook-form";
 import FormTextInput from "../FormTextInput/FormTextInput";
-import { IconButton, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import LoadingButton from "../UI/LoadingButton";
-import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
+import { AccountCircle } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
-import { useState } from "react";
 import { useUser } from "../../contexts/UserProvider/UserProvider";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import FormPasswordInput from "../FormPasswordInput/FormPasswordInput";
 
 const LoginForm = ({ sx }) => {

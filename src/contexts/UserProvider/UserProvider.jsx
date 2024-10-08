@@ -1,32 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react"
 import userReducer, { initUserState, userActions } from "./userReducer"
 import AuthService from "../../services/AuthService"
-import { enqueueSnackbar, useSnackbar } from "notistack"
-import { useNavigate } from "react-router-dom"
+import { enqueueSnackbar } from "notistack"
 
 const UserContext = createContext()
-
-const userRoles = {
-  ADMIN: "admin"
-}
 
 const UserProvider = ({ children }) => {
   const [userState, dispatch] = useReducer(userReducer, initUserState);
   const [isLoading, setIsLoading] = useState(false)
-  const { enqueuesnackbar } = useSnackbar()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const { user } = userState
-    if (user) {
-      switch (user.role) {
-        case userRoles.ADMIN:
-          navigate("/admin")
-          break;
-        default: navigate("/auth")
-      }
-    }
-  }, [userState])
 
   const signUp = useCallback(async ({ userName, email, password }) => {
     const authService = new AuthService()

@@ -23,21 +23,22 @@ class BaseService {
       (response) => response,
       (error) => {
         const { response } = error
+        const errorObj = {
+          error: error,
+          message: error?.response.data.message || error?.message
+        }
+
         if (response) {
           switch (response.status) {
             case 401:
               // unauthorize
-              window.location.reload()
-              return Promise.reject(error)
+              return Promise.reject(errorObj)
             case 403:
               // forbidden
 
               window.location.reload()
-              return Promise.reject(error)
-            default: return Promise.reject({
-              error: error,
-              message: error?.response.data.message || error?.message
-            })
+              return Promise.reject(errorObj)
+            default: return Promise.reject(errorObj)
           }
         }
       }
