@@ -1,4 +1,4 @@
-import BaseService from "./BaseService";
+import BaseService from "./BaseService"
 
 const BASE_URL = `${import.meta.env.VITE_BASE_URL}/v1/api/auth`
 

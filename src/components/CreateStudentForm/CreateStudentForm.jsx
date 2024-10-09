@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Box, Button, Paper } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,6 +8,7 @@ import FormRadioGroup from "../FormRadioGroup/FormRadioGroup";
 import FormAutoComplete from "../FormAutoComplete/FormAutoComplete";
 import FormDatePicker from "../FormDatePicker/FormDatePicker";
 import { getDistricts, getProvinces, getWards } from "../../helpers/api";
+import AvatarChooser from "../AvatarChooser/AvatarChooser";
 
 const CreateStudentForm = () => {
   const { control, handleSubmit } = useForm();
@@ -16,65 +17,89 @@ const CreateStudentForm = () => {
   const [wardAdd, setWardAdd] = useState(null);
   const [province, setProvince] = useState(null);
   const [district, setDistrict] = useState(null);
+
   useEffect(() => {
     (async () => {
       const provinces = await getProvinces();
       setProvinceAdd(provinces.data);
     })();
   }, []);
-  const handleOpenDistrict = async (e, val) => {
-    setProvince(val.id);
+
+  const handleOpenDistrict = async (_, val) => {
     const districts = await getDistricts(val.id);
+
+    setProvince(val.id);
     setDistrictAdd(districts.data);
   };
 
-  const handleOpenWard = async (e, val) => {
-    setDistrict(val.id);
+  const handleOpenWard = async (_, val) => {
     const wards = await getWards(val.id);
+
+    setDistrict(val.id);
     setWardAdd(wards.data);
   };
-  const onSubmit = (data) => console.log(data);
+
+  const onSubmit = async (values) => {
+    const data = {
+      "first_name": values.first_name,
+      "last_name": values.last_name,
+      "email": values.email,
+      "gender": values.gender,
+      "birthday": values.birthday.toDate(),
+      "country": values.country?.full_name,
+      "admission_day": values.admission_date.toDate(),
+      "address": {
+        "province": values.province?.full_name,
+        "district": values.district?.full_name,
+        "ward": values.ward?.full_name,
+        "street": values.street,
+        "number": values.number
+      }
+    }
+
+    console.log({ data })
+  }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={2} offset={3} size={6}>
-        <Grid item="true" size={12} container spacing={2}>
-          <Grid item="true" size={6}>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} p={2} sx={{ pb: "74px", position: "relative" }}>
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 2 }} sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
+          <AvatarChooser name="avatarChooser" control={control} rules={{ required: "Vui lòng chọn ảnh" }} />
+        </Grid>
+        <Grid container spacing={2} size={{ xs: 12, md: 10 }}>
+          <Grid item size={6}>
             <FormTextInput
               control={control}
-              name={"first_name"}
+              name="first_name"
               textFieldProps={{ label: "Họ và tên đệm", fullWidth: true }}
               rules={{ required: "Vui lòng nhập họ và tên đệm" }}
             />
           </Grid>
-          <Grid item="true" size={6}>
+          <Grid item size={6}>
             <FormTextInput
               control={control}
-              name={"last_name"}
+              name="last_name"
               textFieldProps={{ label: "Tên", fullWidth: true }}
               rules={{ required: "Vui lòng nhập tên" }}
             />
           </Grid>
-        </Grid>
-
-        <Grid item="true" size={12}>
-          <FormTextInput
-            name={"email"}
-            textFieldProps={{ label: "Email", fullWidth: true }}
-            control={control}
-            rules={{
-              required: "Vui lòng nhập email",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Vui lòng nhập email hợp lệ",
-              },
-            }}
-          />
-        </Grid>
-        <Grid item="true" size={12} container spacing={2}>
+          <Grid item size={12}>
+            <FormTextInput
+              name="email"
+              textFieldProps={{ label: "Email", fullWidth: true }}
+              control={control}
+              rules={{
+                required: "Vui lòng nhập email",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Vui lòng nhập email hợp lệ",
+                },
+              }}
+            />
+          </Grid>
           <Grid item="true" size={6}>
             <FormRadioGroup
-              name={"gender"}
+              name="gender"
               control={control}
               orientation="row"
               sx={{ justifyContent: "space-around" }}
@@ -83,14 +108,13 @@ const CreateStudentForm = () => {
                 { label: "Nữ", value: "Female" },
               ]}
               defaultVal={"Male"}
-              rules={{ required: "aa" }}
             />
           </Grid>
           <Grid item="true" size={6}>
             <FormDatePicker
               name="birthday"
               control={control}
-              label={"Ngày sinh"}
+              label="Ngày sinh"
               rules={{
                 validate: {
                   required: (value) =>
@@ -105,101 +129,112 @@ const CreateStudentForm = () => {
               }}
             />
           </Grid>
-        </Grid>
-        <Grid item="true" size={12}>
-          <FormAutoComplete
-            name={"province"}
-            control={control}
-            rules={{ required: "Cần chọn thông tin tỉnh" }}
-            label="full_name"
-            options={provinceAdd}
-            displayLabel={"Tỉnh/ thành phố"}
-            handleSetState={(e, val) => handleOpenDistrict(e, val)}
-          />
-        </Grid>
-        <Grid item="true" size={12}>
-          <FormAutoComplete
-            name={"district"}
-            control={control}
-            disabled={!province}
-            rules={{ required: "Vui lòng chọn quận/ huyện/ thị trấn" }}
-            options={districtAdd}
-            label="full_name"
-            displayLabel={"Quận/ huyện/ thị trấn"}
-            handleSetState={(e, val) => handleOpenWard(e, val)}
-          />
-        </Grid>
-        <Grid item="true" size={12}>
-          <FormAutoComplete
-            name={"ward"}
-            disabled={!district}
-            control={control}
-            rules={{ required: "Vui lòng chọn phường/ xã" }}
-            options={wardAdd}
-            label="full_name"
-            displayLabel={"Phường/ xã"}
-            handleSetState={(e, val) => handleOpenWard(e, val)}
-          />
-        </Grid>
-        <Grid item="true" size={12} container>
-          <Grid item="true" size={8}>
+          <Grid item="true" size={12}>
+            <FormAutoComplete
+              name="province"
+              control={control}
+              rules={{ required: "Cần chọn thông tin tỉnh" }}
+              label="full_name"
+              options={provinceAdd}
+              displayLabel={"Tỉnh/ thành phố"}
+              handleSetState={(e, val) => handleOpenDistrict(e, val)}
+            />
+          </Grid>
+          <Grid item="true" size={12}>
+            <FormAutoComplete
+              name="district"
+              control={control}
+              disabled={!province}
+              rules={{ required: "Vui lòng chọn quận/ huyện/ thị trấn" }}
+              options={districtAdd}
+              label="full_name"
+              displayLabel={"Quận/ huyện/ thị trấn"}
+              handleSetState={(e, val) => handleOpenWard(e, val)}
+            />
+          </Grid>
+          <Grid item="true" size={12}>
+            <FormAutoComplete
+              name="ward"
+              disabled={!district}
+              control={control}
+              rules={{ required: "Vui lòng chọn phường/ xã" }}
+              options={wardAdd}
+              label="full_name"
+              displayLabel={"Phường/ xã"}
+              handleSetState={(e, val) => handleOpenWard(e, val)}
+            />
+          </Grid>
+          <Grid item="true" size={6}>
             <FormTextInput
-              name={"street"}
+              name="street"
               textFieldProps={{ label: "Đường", fullWidth: true }}
               control={control}
               rules={{ required: "Vui lòng nhập thông tin đường" }}
             />
           </Grid>
-          <Grid item="true" size={4}>
+          <Grid item="true" size={6}>
             <FormTextInput
-              name={"number"}
+              name="number"
               textFieldProps={{ label: "Số nhà", fullWidth: true }}
               control={control}
             />
           </Grid>
+          <Grid item="true" size={6}>
+            <FormAutoComplete
+              name="country"
+              label="full_name"
+              displayLabel={"Quê quán"}
+              control={control}
+              options={provinceAdd}
+              handleSetState={() => { }}
+              rules={{ required: "Vui lòng nhập thông tin quê quán" }}
+            />
+          </Grid>
+          <Grid item="true" size={6}>
+            <FormDatePicker
+              name="admission_date"
+              rules={{
+                validate: {
+                  required: (value) =>
+                    value || "Vui lòng nhập thông tin ngày nhâp học",
+                  isValidDate: (value) =>
+                    value?.isBefore(moment()) || "Ngày không hợp lệ",
+                },
+              }}
+              label="Ngày nhập học"
+              control={control}
+            />
+          </Grid>
         </Grid>
-        <Grid item="true" size={12}>
-          <FormAutoComplete
-            name={"country"}
-            label="full_name"
-            displayLabel={"Quê quán"}
-            control={control}
-            options={provinceAdd}
-            handleSetState={() => {}}
-            rules={{ required: "Vui lòng nhập thông tin quê quán" }}
-          />
-        </Grid>
-
-        <Grid item="true" size={6}>
-          <FormDatePicker
-            name={"admission_date"}
-            rules={{
-              validate: {
-                required: (value) =>
-                  value || "Vui lòng nhập thông tin ngày nhâp học",
-                isValidDate: (value) =>
-                  value?.isBefore(moment()) || "Ngày không hợp lệ",
-              },
-            }}
-            label={"Ngày nhập học"}
-            control={control}
-          />
-        </Grid>
-        <Grid container size={12} spacing={2} sx={{ justifyContent: "end" }}>
-          <Button variant="outlined" size="large" sx={{ width: "120px" }}>
+        <Paper
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            justifyContent: "end",
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            zIndex: 100,
+            height: "70px",
+            boxShadow: 3,
+            px: 2
+          }}
+        >
+          <Button variant="outlined" size="large" sx={{ minWidth: "120px", mx: 2 }}>
             Huỷ
           </Button>
           <Button
             variant="contained"
             size="large"
             type="submit"
-            sx={{ width: "120px" }}
+            sx={{ minWidth: "120px" }}
           >
             Lưu
           </Button>
-        </Grid>
+        </Paper>
       </Grid>
-    </Box>
+    </Box >
   );
 };
 
