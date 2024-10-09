@@ -69,8 +69,8 @@ const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
           {!open ? <MenuOpen /> : <Close />}
         </IconButton>
         <Stack direction="row" sx={{ display: "flex", columnGap: "10px" }}>
-          <ThemeSwitchButton />
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center", gap: "10px" }}>
+            <Typography sx={{ color: "black" }}>{data?.user?.user_name}</Typography>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar src={data?.user?.avatar}>
@@ -78,6 +78,7 @@ const AdminAppBar = ({ open, handleSideBarOpen, handleSideBarClose }) => {
                 </Avatar>
               </IconButton>
             </Tooltip>
+            <ThemeSwitchButton />
             <Menu
               sx={{ mt: '45px' }}
               id="settings-menu"
