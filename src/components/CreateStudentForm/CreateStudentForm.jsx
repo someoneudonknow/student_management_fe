@@ -9,6 +9,7 @@ import FormAutoComplete from "../FormAutoComplete/FormAutoComplete";
 import FormDatePicker from "../FormDatePicker/FormDatePicker";
 import { getDistricts, getProvinces, getWards } from "../../helpers/api";
 import AvatarChooser from "../AvatarChooser/AvatarChooser";
+import { useNavigate } from "react-router-dom";
 
 const CreateStudentForm = () => {
   const { control, handleSubmit } = useForm();
@@ -17,6 +18,7 @@ const CreateStudentForm = () => {
   const [wardAdd, setWardAdd] = useState(null);
   const [province, setProvince] = useState(null);
   const [district, setDistrict] = useState(null);
+  const navigate = useNavigate()
 
   useEffect(() => {
     (async () => {
@@ -24,6 +26,10 @@ const CreateStudentForm = () => {
       setProvinceAdd(provinces.data);
     })();
   }, []);
+
+  const handleCancel = () => {
+    navigate("..")
+  }
 
   const handleOpenDistrict = async (_, val) => {
     const districts = await getDistricts(val.id);
@@ -38,6 +44,8 @@ const CreateStudentForm = () => {
     setDistrict(val.id);
     setWardAdd(wards.data);
   };
+
+
 
   const onSubmit = async (values) => {
     const data = {
@@ -221,7 +229,7 @@ const CreateStudentForm = () => {
             px: 2
           }}
         >
-          <Button variant="outlined" size="large" sx={{ minWidth: "120px", mx: 2 }}>
+          <Button onClick={handleCancel} variant="outlined" size="large" sx={{ minWidth: "120px", mx: 2 }}>
             Huỷ
           </Button>
           <Button
