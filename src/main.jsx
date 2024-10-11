@@ -11,7 +11,6 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { SnackbarProvider } from "notistack";
 import ThemeProvider from "./contexts/ThemeProvider/ThemeProvider";
 import UserProvider from "./contexts/UserProvider/UserProvider";
-
 import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
