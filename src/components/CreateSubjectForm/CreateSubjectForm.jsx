@@ -4,21 +4,14 @@ import FormTextInput from "../FormTextInput/FormTextInput"
 import { INTEGER_NUMBER_REGEX, NAME_NOT_INCLUDE_NUMBER_REGEX } from "../../constants/regex"
 import { useForm } from "react-hook-form"
 
-const CreateSubjectForm = () => {
+const CreateSubjectForm = ({ onCancel, onSubmit }) => {
   const { control, handleSubmit } = useForm()
 
-  const handleCreateSubject = (values) => {
-    const data = {
-      name: values.name,
-      number_of_period: values.numberOfPeriod,
-    }
-    console.log(data)
-  }
   return (
     <Box
       component="form"
       sx={{ width: "100%", height: "100%", display: "grid", placeItems: "center" }}
-      onSubmit={handleSubmit(handleCreateSubject)}
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Grid container spacing={2}>
         <Grid size={12}>
@@ -54,7 +47,7 @@ const CreateSubjectForm = () => {
         </Grid>
         <Grid size={12}>
           <Stack direction="row" justifyContent="flex-end" component="div" gap={2}>
-            <Button variant="outlined" sx={{ minWidth: "80px" }}>
+            <Button variant="outlined" sx={{ minWidth: "80px" }} onClick={onCancel}>
               Huỷ
             </Button>
             <Button variant="contained" type="submit" sx={{ minWidth: "120px" }}>

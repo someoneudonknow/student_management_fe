@@ -34,7 +34,7 @@ const CreateTeacher = () => {
   }, [])
 
   const handleCancel = () => {
-    navigate("..")
+    navigate("/admin/teacher")
   }
 
   const handleOpenDistrict = async (_, val) => {
