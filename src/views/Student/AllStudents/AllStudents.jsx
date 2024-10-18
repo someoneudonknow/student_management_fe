@@ -19,7 +19,7 @@ const STUDENT_INFO_COLUMNS = [
   {
     field: 'email',
     headerName: 'Email',
-    flex: 2.5,
+    flex: 2,
   },
   {
     field: 'gender',
