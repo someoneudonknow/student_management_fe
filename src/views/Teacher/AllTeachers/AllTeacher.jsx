@@ -4,7 +4,7 @@ import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
 import { Add, Delete, Edit } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
 
-const STUDENT_INFO_COLUMNS = [
+const TEACHER_INFO_COLUMNS = [
   { field: "id", headerName: "ID", flex: 1 },
   {
     field: "firstName",
@@ -32,13 +32,18 @@ const STUDENT_INFO_COLUMNS = [
     flex: 1.5,
   },
   {
+    field: "phoneNumber",
+    headerName: "SĐT",
+    flex: 1.5,
+  },
+  {
     field: "country",
     headerName: "Quê quán",
     flex: 1.5,
   },
   {
     field: "admissionDate",
-    headerName: "Ngày nhập học",
+    headerName: "Ngày vào làm",
     flex: 1.5,
   },
   {
@@ -115,34 +120,34 @@ const rows = [
   { id: Math.random(), lastName: "Roxie", firstName: "Harvey", age: 65 },
 ]
 
-const AllStudents = () => {
+const AllTeachers = () => {
   const navigate = useNavigate()
 
-  const handleAddStudentButtonClicked = () => {
-    navigate("/admin/student/create")
+  const handleAddTeacherButtonClicked = () => {
+    navigate("/admin/teacher/create")
   }
 
   return (
     <Box p={1} component="div" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <Toolbar sx={{ justifyContent: "space-between" }} disableGutters py={3}>
         <Box>
-          <SearchBox sx={{ minWidth: "400px" }} label="Tìm kiếm học sinh" />
+          <SearchBox sx={{ minWidth: "400px" }} label="Tìm kiếm giáo viên" />
         </Box>
         <Stack>
-          <Button startIcon={<Add />} variant="outlined" onClick={handleAddStudentButtonClicked}>
-            Thêm học sinh
+          <Button startIcon={<Add />} variant="outlined" onClick={handleAddTeacherButtonClicked}>
+            Thêm giáo viên
           </Button>
         </Stack>
       </Toolbar>
       <PrimaryTable
         wrapperSx={{ flex: 1 }}
         rows={rows}
-        columns={STUDENT_INFO_COLUMNS}
-        title="Thông tin học sinh"
+        columns={TEACHER_INFO_COLUMNS}
+        title="Thông tin giáo viên"
         autoPageSizeOnMount
       />
     </Box>
   )
 }
 
-export default AllStudents
+export default AllTeachers
