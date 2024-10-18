@@ -1,4 +1,4 @@
-import { Home, People } from "@mui/icons-material"
+import { Book, Home, People, Person4 } from "@mui/icons-material"
 
 export const SIDE_BAR_WIDTH = `${270}px`
 
@@ -6,11 +6,21 @@ export const SIDE_BAR_ITEMS = [
   {
     title: "Trang chủ",
     icon: <Home />,
-    path: "/admin/dashboard"
+    path: "/admin/dashboard",
   },
   {
     title: "Quản lý học sinh",
     icon: <People />,
-    path: "/admin/student"
-  }
+    path: "/admin/student",
+  },
+  {
+    title: "Quản lý giáo viên",
+    icon: <Person4 />,
+    path: "/admin/teacher",
+  },
+  {
+    title: "Quản lý môn học",
+    icon: <Book />,
+    path: "/admin/subject",
+  },
 ]
