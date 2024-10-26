@@ -34,9 +34,8 @@ class BaseService {
               // unauthorize
               return Promise.reject(errorObj)
             case 403:
-              // forbidden
-
               window.location.reload()
+
               return Promise.reject(errorObj)
             default: return Promise.reject(errorObj)
           }

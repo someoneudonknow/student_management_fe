@@ -111,10 +111,6 @@ const SignUpForm = ({ sx }) => {
         control={control}
         rules={{
           required: "Vui lòng xác nhập mật khẩu",
-          minLength: {
-            value: 6,
-            message: "Mật khẩu tối thiểu 6 kí tự"
-          },
           validate: {
             isEqualPass: value => value === password || "Mật khẩu xác nhận không trùng khớp"
           }
