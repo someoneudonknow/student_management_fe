@@ -2,12 +2,15 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useReducer,
 import userReducer, { initUserState, userActions } from "./userReducer"
 import AuthService from "../../services/AuthService"
 import { enqueueSnackbar } from "notistack"
+import { useNavigate } from "react-router-dom";
+import { ADMIN } from "../../constants/roles.js";
 
 const UserContext = createContext()
 
 const UserProvider = ({ children }) => {
   const [userState, dispatch] = useReducer(userReducer, initUserState);
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const signUp = useCallback(async ({ userName, email, password }) => {
     const authService = new AuthService()
@@ -19,6 +22,10 @@ const UserProvider = ({ children }) => {
 
       dispatch({ type: userActions.SET_USER, payload: user })
       dispatch({ type: userActions.SET_TOKENS, payload: tokens })
+
+      if (user.role === ADMIN) {
+        navigate("/admin")
+      }
 
       enqueueSnackbar(message, { variant: "success" })
     } catch (e) {
@@ -39,6 +46,10 @@ const UserProvider = ({ children }) => {
       dispatch({ type: userActions.SET_USER, payload: user })
       dispatch({ type: userActions.SET_TOKENS, payload: tokens })
 
+      if (user.role === ADMIN) {
+        navigate("/admin")
+      }
+
       enqueueSnackbar(message, { variant: "success" })
     } catch (e) {
       enqueueSnackbar(e.message, { variant: "error" })
@@ -52,6 +63,8 @@ const UserProvider = ({ children }) => {
     try {
       setIsLoading(true)
       await authService.logout()
+
+      navigate("/auth")
 
       dispatch({ type: userActions.RESET })
     } catch (e) {

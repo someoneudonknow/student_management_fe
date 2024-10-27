@@ -1,4 +1,3 @@
-import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import AuthView from "../views/Auth/Auth.jsx"
 import ForgotPassword from '../views/ForgotPassword/ForgotPassword.jsx'

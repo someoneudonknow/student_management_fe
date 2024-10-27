@@ -3,6 +3,8 @@ import SearchBox from "../../../components/SearchBox/SearchBox"
 import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
 import { Add, Delete, Edit } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import StudentService from "../../../services/StudentService"
 
 const STUDENT_INFO_COLUMNS = [
   { field: "id", headerName: "ID", flex: 1 },
@@ -117,6 +119,20 @@ const rows = [
 
 const AllStudents = () => {
   const navigate = useNavigate()
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10);
+  const [students, setStudents] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const studentService = new StudentService()
+
+      const res = await studentService.getAllStudent({})
+      const totalPages = res?.data?.metadata?.totalPages
+
+
+    })()
+  }, [])
 
   const handleAddStudentButtonClicked = () => {
     navigate("/admin/student/create")
