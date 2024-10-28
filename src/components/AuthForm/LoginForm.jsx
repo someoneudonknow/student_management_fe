@@ -7,6 +7,7 @@ import FormWrapper from "./FormWrapper";
 import { useUser } from "../../contexts/UserProvider/UserProvider";
 import { Link } from "react-router-dom";
 import FormPasswordInput from "../FormPasswordInput/FormPasswordInput";
+import { enqueueSnackbar } from "notistack";
 
 const LoginForm = ({ sx }) => {
   const { control, handleSubmit } = useForm();
@@ -40,6 +41,7 @@ const LoginForm = ({ sx }) => {
       </Typography>
       <FormTextInput
         name="username"
+        id="username"
         control={control}
         rules={{
           required: "Vui lòng nhập tên đăng nhập",
@@ -54,6 +56,7 @@ const LoginForm = ({ sx }) => {
       <FormPasswordInput
         control={control}
         name="password"
+        id="password"
         rules={{
           required: "Vui lòng nhập mật khẩu",
           minLength: {
@@ -75,6 +78,7 @@ const LoginForm = ({ sx }) => {
         <Link to="/auth/forgot-password">Quên mật khẩu?</Link>
       </Typography>
       <LoadingButton
+        id="login-btn"
         loading={isLoading}
         wrapperSx={{ mt: "80px", py: 1.5 }}
         type="submit"
