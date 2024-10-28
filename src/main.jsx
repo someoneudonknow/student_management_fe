@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")).render(
       <LocalizationProvider dateAdapter={AdapterMoment} >
         <ThemeProvider>
           <SnackbarProvider
-            autoHideDuration={1000}
+            autoHideDuration={3000}
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
           >
             <UserProvider>

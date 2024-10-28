@@ -4,7 +4,6 @@ import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
 import { Add, Delete, Edit } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
-import StudentService from "../../../services/StudentService"
 
 const STUDENT_INFO_COLUMNS = [
   { field: "id", headerName: "ID", flex: 1 },

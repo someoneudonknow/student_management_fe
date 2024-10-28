@@ -27,9 +27,19 @@ const UserProvider = ({ children }) => {
         navigate("/admin")
       }
 
-      enqueueSnackbar(message, { variant: "success" })
+      enqueueSnackbar("Đăng kí thành công", {
+        variant: "success",
+        SnackbarProps: {
+          id: "register-success-snackbar"
+        }
+      })
     } catch (e) {
-      enqueueSnackbar(e.message, { variant: "error" })
+      enqueueSnackbar("Đăng kí thất bại", {
+        variant: "error",
+        SnackbarProps: {
+          id: "register-failed-snackbar"
+        }
+      })
     } finally {
       setIsLoading(false)
     }
@@ -50,9 +60,19 @@ const UserProvider = ({ children }) => {
         navigate("/admin")
       }
 
-      enqueueSnackbar(message, { variant: "success" })
+      enqueueSnackbar("Đăng nhập thành công", {
+        variant: "success",
+        SnackbarProps: {
+          id: "login-success-snackbar"
+        }
+      })
     } catch (e) {
-      enqueueSnackbar(e.message, { variant: "error" })
+      enqueueSnackbar("Đăng nhập thất bại", {
+        variant: "error",
+        SnackbarProps: {
+          id: "login-failed-snackbar"
+        }
+      })
     } finally {
       setIsLoading(false)
     }
