@@ -1,6 +1,6 @@
 import { Box, Button, Paper } from "@mui/material"
 import Grid from "@mui/material/Grid2"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import moment from "moment"
 import FormTextInput from "../FormTextInput/FormTextInput"
@@ -9,48 +9,135 @@ import FormAutoComplete from "../FormAutoComplete/FormAutoComplete"
 import FormDatePicker from "../FormDatePicker/FormDatePicker"
 import { getDistricts, getProvinces, getWards } from "../../helpers/api"
 import AvatarChooser from "../AvatarChooser/AvatarChooser"
-import { useNavigate } from "react-router-dom"
-import StudentService from "../../services/StudentService"
 import { enqueueSnackbar } from "notistack"
 import { upperCaseWords } from "../../utils"
 import LoadingButton from "../UI/LoadingButton"
 
-const CreateStudentForm = () => {
-  const { control, handleSubmit } = useForm()
-  const [provinceAdd, setProvinceAdd] = useState(null)
-  const [districtAdd, setDistrictAdd] = useState(null)
-  const [wardAdd, setWardAdd] = useState(null)
-  const [province, setProvince] = useState(null)
-  const [district, setDistrict] = useState(null)
+const EditStudentForm = ({ onCancel, onSubmit, initValue }) => {
+  const { control, handleSubmit, setValue } = useForm({
+    defaultValues: {
+      first_name: initValue.first_name ?? "",
+      last_name: initValue.last_name ?? "",
+      gender: initValue.gender ?? "Male",
+      birthday: initValue?.birthday ? moment(initValue.birthday) : moment(),
+      email: initValue?.email ?? "",
+      country: null,
+      province: null,
+      district: null,
+      ward: null,
+      number: initValue?.Address?.number ?? "",
+      street: initValue?.Address?.street ?? "",
+      admission_date: initValue?.admission_day ? moment(initValue.admission_day) : null,
+    }
+  })
+  const [provinces, setProvinces] = useState([])
+  const [districts, setDistricts] = useState([])
+  const [wards, setWards] = useState([])
+  const [currentProvince, setCurrentProvince] = useState(null)
+  const [currentDistrict, setCurrentDistrict] = useState(null)
+  const [provinceLoading, setProvinceLoading] = useState(false)
+  const [districtLoading, setDistrictLoading] = useState(false)
+  const [wardLoading, setWardLoading] = useState(false)
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+
+  const provinceId = useMemo(() => {
+    const initProvince = initValue?.Address?.province
+    const currentProvinceId = currentProvince?.id
+
+    if (currentProvinceId) {
+      return currentProvinceId
+    }
+
+    if (!currentProvinceId && provinces && initProvince) {
+      const initProvinceData = provinces.find(province => province.full_name === initProvince)
+      setValue("province", initProvinceData)
+
+      return initProvinceData?.id || null
+    }
+
+    return null
+  }, [provinces, currentProvince, initValue])
+
+  const districtId = useMemo(() => {
+    const initDistrict = initValue?.Address?.district
+    const currentDistrictId = currentDistrict?.id
+
+    if (currentDistrictId) {
+      return currentDistrictId
+    }
+
+    if (!currentDistrictId && districts && initDistrict) {
+      const initDistrictData = districts.find(district => district.full_name === initDistrict)
+      setValue("district", initDistrictData)
+
+      return initDistrictData?.id || null
+    }
+
+    return null
+  }, [districts, currentDistrict, initValue])
 
   useEffect(() => {
-    ;(async () => {
-      const provinces = await getProvinces()
-      setProvinceAdd(provinces.data)
+    ; (async () => {
+      setProvinceLoading(true)
+      try {
+        const provinces = await getProvinces()
+        setProvinces(provinces?.data || [])
+
+        const initCountry = provinces.data.find(w => w.full_name === initValue?.country)
+        if (initCountry) {
+          setValue("country", initCountry)
+        }
+      } catch (err) {
+        console.log("Error while fetching provinces", err)
+      }
+      setProvinceLoading(false)
     })()
   }, [])
 
-  const handleCancel = () => {
-    navigate("..")
+  useEffect(() => {
+    ; (async () => {
+      setDistrictLoading(true)
+      try {
+        if (provinceId) {
+          const districts = await getDistricts(provinceId)
+          setDistricts(districts?.data || [])
+        }
+      } catch (err) {
+        console.log("Error while fetching districts", err)
+      }
+      setDistrictLoading(false)
+    })()
+  }, [provinceId])
+
+  useEffect(() => {
+    ; (async () => {
+      setWardLoading(true)
+      try {
+        if (districtId) {
+          const wardResult = await getWards(districtId)
+          setWards(wardResult?.data || [])
+
+          const initWardData = wardResult.data.find(w => w.full_name === initValue?.Address?.ward)
+          if (initWardData) {
+            setValue("ward", initWardData)
+          }
+        }
+      } catch (err) {
+        console.log("Error while fetching wards", err)
+      }
+      setWardLoading(false)
+    })()
+  }, [districtId])
+
+  const handleProvinceChange = async (_, val) => {
+    setCurrentProvince(val)
   }
 
-  const handleOpenDistrict = async (_, val) => {
-    const districts = await getDistricts(val.id)
-
-    setProvince(val.id)
-    setDistrictAdd(districts.data)
+  const handleDistrictChange = async (_, val) => {
+    setCurrentDistrict(val)
   }
 
-  const handleOpenWard = async (_, val) => {
-    const wards = await getWards(val.id)
-
-    setDistrict(val.id)
-    setWardAdd(wards.data)
-  }
-
-  const onSubmit = async (values) => {
+  const handleEditSubmit = async (values) => {
     const data = {
       first_name: upperCaseWords(values.first_name),
       last_name: upperCaseWords(values.last_name),
@@ -60,6 +147,7 @@ const CreateStudentForm = () => {
       country: values.country?.full_name,
       admission_day: values.admission_date.toDate().toString(),
       address: {
+        id: initValue?.Address?.id,
         province: values.province?.full_name,
         district: values.district?.full_name,
         ward: values.ward?.full_name,
@@ -68,35 +156,29 @@ const CreateStudentForm = () => {
       },
     }
 
-    const studentService = new StudentService()
-
     setLoading(true)
     try {
-      await studentService.createStudent(data)
-
-      enqueueSnackbar("Thêm học sinh thành công", { variant: "success" })
-      navigate("/admin/student")
+      await onSubmit(initValue.id, data)
     } catch (err) {
-      enqueueSnackbar("Lỗi xảy ra khi thêm học sinh, vui lòng thử lại sau", { variant: "error" })
+      enqueueSnackbar(err.message, { variant: "error" })
     }
     setLoading(false)
   }
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      p={2}
-      sx={{ pb: "74px", position: "relative" }}
-    >
-      <Grid container spacing={2}>
+    <Box component="form" onSubmit={handleSubmit(handleEditSubmit)} p={2}>
+      <Grid container spacing={2} sx={{ pb: "70px" }}>
         <Grid
-          size={{ xs: 12, md: 2 }}
+          size={12}
           sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}
         >
-          {/* <AvatarChooser name="avatarChooser" control={control} rules={{ required: "Vui lòng chọn ảnh" }} /> */}
+          {/* <AvatarChooser */}
+          {/*   name="avatarChooser" */}
+          {/*   control={control} */}
+          {/*   rules={{ required: "Vui lòng chọn ảnh" }} */}
+          {/* /> */}
         </Grid>
-        <Grid container spacing={2} size={{ xs: 12, md: 10 }}>
+        <Grid container spacing={2} size={12}>
           <Grid item size={6}>
             <FormTextInput
               control={control}
@@ -137,7 +219,6 @@ const CreateStudentForm = () => {
                 { label: "Nam", value: "Male" },
                 { label: "Nữ", value: "Female" },
               ]}
-              defaultVal={"Male"}
             />
           </Grid>
           <Grid item="true" size={6}>
@@ -159,37 +240,40 @@ const CreateStudentForm = () => {
           </Grid>
           <Grid item="true" size={12}>
             <FormAutoComplete
+              loading={provinceLoading}
+              disabled={provinceLoading}
               name="province"
               control={control}
               rules={{ required: "Cần chọn thông tin tỉnh" }}
               label="full_name"
-              options={provinceAdd}
+              options={provinces}
               displayLabel={"Tỉnh/ thành phố"}
-              handleSetState={(e, val) => handleOpenDistrict(e, val)}
+              handleSetState={(e, val) => handleProvinceChange(e, val)}
             />
           </Grid>
           <Grid item="true" size={12}>
             <FormAutoComplete
+              loading={districtLoading}
+              disabled={districts?.length === 0 || districtLoading}
               name="district"
               control={control}
-              disabled={!province}
               rules={{ required: "Vui lòng chọn quận/ huyện/ thị trấn" }}
-              options={districtAdd}
+              options={districts}
               label="full_name"
               displayLabel={"Quận/ huyện/ thị trấn"}
-              handleSetState={(e, val) => handleOpenWard(e, val)}
+              handleSetState={(e, val) => handleDistrictChange(e, val)}
             />
           </Grid>
           <Grid item="true" size={12}>
             <FormAutoComplete
+              loading={wardLoading}
+              disabled={wards?.length === 0 || wardLoading}
               name="ward"
-              disabled={!district}
               control={control}
               rules={{ required: "Vui lòng chọn phường/ xã" }}
-              options={wardAdd}
+              options={wards}
               label="full_name"
               displayLabel={"Phường/ xã"}
-              handleSetState={(e, val) => handleOpenWard(e, val)}
             />
           </Grid>
           <Grid item="true" size={6}>
@@ -213,8 +297,8 @@ const CreateStudentForm = () => {
               label="full_name"
               displayLabel={"Quê quán"}
               control={control}
-              options={provinceAdd}
-              handleSetState={() => {}}
+              options={provinces}
+              handleSetState={() => { }}
               rules={{ required: "Vui lòng nhập thông tin quê quán" }}
             />
           </Grid>
@@ -234,7 +318,6 @@ const CreateStudentForm = () => {
         </Grid>
         <Paper
           sx={{
-            position: "fixed",
             bottom: 0,
             left: 0,
             justifyContent: "end",
@@ -245,10 +328,11 @@ const CreateStudentForm = () => {
             height: "70px",
             boxShadow: 3,
             px: 2,
+            position: "absolute",
           }}
         >
           <Button
-            onClick={handleCancel}
+            onClick={onCancel}
             variant="outlined"
             size="large"
             sx={{ minWidth: "120px", mx: 2 }}
@@ -270,4 +354,4 @@ const CreateStudentForm = () => {
   )
 }
 
-export default CreateStudentForm
+export default EditStudentForm

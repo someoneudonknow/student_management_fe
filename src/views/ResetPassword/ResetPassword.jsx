@@ -18,7 +18,7 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (!otp || !uid) {
-      navigate("/auth")
+      // navigate("/auth")
     }
   }, [otp, uid])
 
@@ -32,8 +32,8 @@ const ResetPassword = () => {
 
     try {
       setLoading(true)
+
       const authService = new AuthService()
-      console.log({ data })
       await authService.resetPassword(data)
 
       navigate("/auth")

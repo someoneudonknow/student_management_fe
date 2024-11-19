@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "npx mocha --no-timeouts tests/*.test.js"
+    "test": "npx mocha -timeout 10000 test/*.test.js",
+    "test:units": "npx mocha test/units/*.test.js"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -19,6 +20,7 @@
     "@mui/x-data-grid": "^7.19.0",
     "@mui/x-date-pickers": "^7.18.0",
     "axios": "^1.7.7",
+    "chai": "^5.1.2",
     "js-cookie": "^3.0.5",
     "mocha": "^10.7.3",
     "moment": "^2.30.1",
@@ -40,6 +42,7 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "mocha": "^10.7.3",
     "prettier": "^3.3.3",
     "vite": "^5.4.1"
   }

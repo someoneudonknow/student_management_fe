@@ -21,9 +21,9 @@ const FormAutoComplete = ({
           {...field}
           options={options || []}
           disabled={disabled}
-          getOptionLabel={(option) => option[label]}
+          getOptionLabel={(option) => option[label] ?? ""}
           onChange={(e, val) => {
-            handleSetState(e, val);
+            handleSetState && handleSetState(e, val);
             field.onChange(val);
           }}
           renderInput={(params) => (
@@ -34,7 +34,7 @@ const FormAutoComplete = ({
               helperText={error?.message}
             />
           )}
-        ></Autocomplete>
+        />
       )}
     />
   );

@@ -128,6 +128,7 @@ const SignUpForm = ({ sx }) => {
           </IconButton>}
       />
       <LoadingButton
+        id="register-btn"
         loading={isLoading}
         wrapperSx={{ mt: "80px" }}
         sx={{ py: 1.5 }}
