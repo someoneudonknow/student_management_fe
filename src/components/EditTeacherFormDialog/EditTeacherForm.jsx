@@ -1,32 +1,34 @@
-import { Box, Button, Paper, Typography } from "@mui/material"
+import { Box, Button, Paper } from "@mui/material"
 import Grid from "@mui/material/Grid2"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import moment from "moment"
 import FormTextInput from "../FormTextInput/FormTextInput"
 import FormRadioGroup from "../FormRadioGroup/FormRadioGroup"
-import FormAutoComplete from "../FormAutoComplete/FormAutoComplete"
-import { getDistricts, getProvinces, getWards } from "../../helpers/api"
 import FormDatePicker from "../FormDatePicker/FormDatePicker"
-import AvatarChooser from "../AvatarChooser/AvatarChooser"
-import { useNavigate } from "react-router-dom"
-import {
-  NAME_NOT_INCLUDE_NUMBER_REGEX,
-  NOT_EMAIL_REGEX,
-  PHONE_NUMBER_REGEX,
-} from "../../constants/regex"
 import { enqueueSnackbar } from "notistack"
-import TeacherService from "../../services/TeacherService"
+import { NOT_EMAIL_REGEX, PHONE_NUMBER_REGEX } from "../../constants/regex"
 
-const CreateTeacher = () => {
-  const { control, handleSubmit } = useForm()
-  const navigate = useNavigate()
+const EditTeacherForm = ({ onCancel, onSubmit, initValue }) => {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      firstName: initValue.first_name ?? "",
+      lastName: initValue.last_name ?? "",
+      gender: initValue.gender ?? "Male",
+      birthday: initValue?.birthday ? moment(initValue.birthday) : moment(),
+      email: initValue?.email ?? "",
+      firstDayOfWork: initValue?.first_day_of_work ? moment(initValue.first_day_of_work) : null,
+      phoneNumber: initValue?.phone_number,
+      isRetired: initValue?.is_retired,
+    },
+  })
+  console.log(initValue)
 
   const handleCancel = () => {
-    navigate("/admin/teacher")
+    onCancel()
   }
 
-  const onSubmit = async (values) => {
+  const onEdit = async (values) => {
     const data = {
       first_name: values.firstName,
       last_name: values.lastName,
@@ -35,14 +37,11 @@ const CreateTeacher = () => {
       gender: values.gender,
       birthday: values.birthday.toDate().toString(),
       first_day_of_work: values.firstDayOfWork.toDate().toString(),
+      is_retired: values.isRetired,
     }
 
     try {
-      const teacherService = new TeacherService()
-      await teacherService.createTeacher(data)
-
-      navigate("/admin/teacher")
-      enqueueSnackbar("Thêm giáo viên thành công", { variant: "success" })
+      onSubmit && (await onSubmit(initValue.id, data))
     } catch (e) {
       enqueueSnackbar(e.message, { variant: "error" })
     }
@@ -51,14 +50,11 @@ const CreateTeacher = () => {
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onEdit)}
       p={2}
-      sx={{ pb: "74px", position: "relative", display: "flex", justifyContent: "center" }}
+      sx={{ display: "flex", justifyContent: "center" }}
     >
       <Grid container spacing={1} sx={{ width: "700px" }}>
-        <Grid size={12} sx={{ pb: 5 }}>
-          <Typography variant="h4">Thêm giáo viên</Typography>
-        </Grid>
         <Grid size={6}>
           <FormTextInput
             control={control}
@@ -93,6 +89,20 @@ const CreateTeacher = () => {
             }}
           />
         </Grid>
+
+        <Grid item="true" size={12}>
+          <FormRadioGroup
+            name="gender"
+            control={control}
+            orientation="row"
+            sx={{ justifyContent: "start", gap: 1 }}
+            radioOption={[
+              { label: "Nam", value: "Male" },
+              { label: "Nữ", value: "Female" },
+            ]}
+            defaultVal={"Male"}
+          />
+        </Grid>
         <Grid item size={12}>
           <FormTextInput
             name="phoneNumber"
@@ -109,15 +119,14 @@ const CreateTeacher = () => {
         </Grid>
         <Grid item="true" size={12}>
           <FormRadioGroup
-            name="gender"
+            name="isRetired"
             control={control}
             orientation="row"
-            sx={{ justifyContent: "space-around" }}
+            sx={{ justifyContent: "start", gap: 1 }}
             radioOption={[
-              { label: "Nam", value: "Male" },
-              { label: "Nữ", value: "Female" },
+              { label: "Đang dạy", value: false },
+              { label: "Đã nghỉ hưu", value: true },
             ]}
-            defaultVal={"Male"}
           />
         </Grid>
         <Grid size={12}>
@@ -130,9 +139,8 @@ const CreateTeacher = () => {
                 required: (value) => value || "Vui lòng nhập thông tin ngày sinh",
                 isValidDate: (value) => value?.isBefore(moment()) || "Ngày không hợp lệ",
                 ageOver: (value) =>
-                  value?.isBefore(
-                    moment().subtract(18, "years").startOf("year"), //must receiver params year
-                  ) || "Giáo viên phải ít nhất trên 18 tuổi",
+                  value?.isBefore(moment().subtract(18, "years").startOf("year")) ||
+                  "Giáo viên phải ít nhất trên 18 tuổi",
               },
             }}
           />
@@ -150,21 +158,7 @@ const CreateTeacher = () => {
             control={control}
           />
         </Grid>
-        <Paper
-          sx={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            justifyContent: "end",
-            display: "flex",
-            width: "100%",
-            alignItems: "center",
-            zIndex: 100,
-            height: "70px",
-            boxShadow: 3,
-            px: 2,
-          }}
-        >
+        <Grid size={12} sx={{ display: "flex", mt: 3 }} justifyContent="end">
           <Button
             onClick={handleCancel}
             variant="outlined"
@@ -176,10 +170,10 @@ const CreateTeacher = () => {
           <Button variant="contained" size="large" type="submit" sx={{ minWidth: "120px" }}>
             Lưu
           </Button>
-        </Paper>
+        </Grid>
       </Grid>
     </Box>
   )
 }
 
-export default CreateTeacher
+export default EditTeacherForm

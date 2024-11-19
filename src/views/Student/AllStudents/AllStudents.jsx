@@ -1,144 +1,139 @@
-import { Box, Button, IconButton, Stack, Toolbar } from "@mui/material"
+import { Box, Button, Stack, Toolbar } from "@mui/material"
+import EditStudentFormDialog from "../../../components/EditStudentFormDialog/EditStudentFormDialog.jsx"
 import SearchBox from "../../../components/SearchBox/SearchBox"
 import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
 import { Add, Delete, Edit } from "@mui/icons-material"
+import useServerPagination from "../../../hooks/useServerPagination.js"
 import { useNavigate } from "react-router-dom"
-import { useEffect, useState } from "react"
-
-const STUDENT_INFO_COLUMNS = [
-  { field: "id", headerName: "ID", flex: 1 },
-  {
-    field: "firstName",
-    headerName: "Họ và tên đệm",
-    flex: 2,
-  },
-  {
-    field: "lastName",
-    headerName: "Tên",
-    flex: 1.5,
-  },
-  {
-    field: "email",
-    headerName: "Email",
-    flex: 2.5,
-  },
-  {
-    field: "gender",
-    headerName: "Giới tính",
-    flex: 1,
-  },
-  {
-    field: "birthday",
-    headerName: "Ngày sinh",
-    flex: 1.5,
-  },
-  {
-    field: "country",
-    headerName: "Quê quán",
-    flex: 1.5,
-  },
-  {
-    field: "admissionDate",
-    headerName: "Ngày nhập học",
-    flex: 1.5,
-  },
-  {
-    field: "address",
-    headerName: "Địa chỉ",
-    flex: 2,
-  },
-  {
-    field: "status",
-    headerName: "Trạng thái",
-    flex: 1,
-  },
-  {
-    field: "actions",
-    headerName: "Hành động",
-    sortable: false,
-    filterable: false,
-    disableColumnMenu: true,
-    width: 150,
-    renderCell: (params) => {
-      return (
-        <div style={{ width: "100%", display: "flex", alignItems: "center", height: "100%" }}>
-          <IconButton>
-            <Edit />
-          </IconButton>
-          <IconButton color="error" sx={{ ml: 1 }}>
-            <Delete />
-          </IconButton>
-        </div>
-      )
-    },
-  },
-]
-
-const rows = [
-  { id: Math.random(), lastName: "Snow", firstName: "Jon", age: 14 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Cersei", age: 31 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Jaime", age: 31 },
-  { id: Math.random(), lastName: "Stark", firstName: "Arya", age: 11 },
-  { id: Math.random(), lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: Math.random(), lastName: "Melisandre", firstName: null, age: 150 },
-  { id: Math.random(), lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: Math.random(), lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: Math.random(), lastName: "Roxie", firstName: "Harvey", age: 65 },
-
-  { id: Math.random(), lastName: "Snow", firstName: "Jon", age: 14 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Cersei", age: 31 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Jaime", age: 31 },
-  { id: Math.random(), lastName: "Stark", firstName: "Arya", age: 11 },
-  { id: Math.random(), lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: Math.random(), lastName: "Melisandre", firstName: null, age: 150 },
-  { id: Math.random(), lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: Math.random(), lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: Math.random(), lastName: "Roxie", firstName: "Harvey", age: 65 },
-
-  { id: Math.random(), lastName: "Snow", firstName: "Jon", age: 14 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Cersei", age: 31 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Jaime", age: 31 },
-  { id: Math.random(), lastName: "Stark", firstName: "Arya", age: 11 },
-  { id: Math.random(), lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: Math.random(), lastName: "Melisandre", firstName: null, age: 150 },
-  { id: Math.random(), lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: Math.random(), lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: Math.random(), lastName: "Roxie", firstName: "Harvey", age: 65 },
-
-  { id: Math.random(), lastName: "Snow", firstName: "Jon", age: 14 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Cersei", age: 31 },
-  { id: Math.random(), lastName: "Lannister", firstName: "Jaime", age: 31 },
-  { id: Math.random(), lastName: "Stark", firstName: "Arya", age: 11 },
-  { id: Math.random(), lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: Math.random(), lastName: "Melisandre", firstName: null, age: 150 },
-  { id: Math.random(), lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: Math.random(), lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: Math.random(), lastName: "Roxie", firstName: "Harvey", age: 65 },
-]
+import StudentService from "../../../services/StudentService"
+import { useState, useMemo } from "react"
+import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog.jsx"
+import useStudentCRUD from "../../../hooks/useStudentCRUD.js"
+import { GridActionsCellItem } from "@mui/x-data-grid"
+import { STUDENT_FIELDS } from "./constants/index.js"
 
 const AllStudents = () => {
   const navigate = useNavigate()
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10);
-  const [students, setStudents] = useState([]);
-
-  useEffect(() => {
-    (async () => {
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [currentStudent, setCurrentStudent] = useState(null)
+  const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false)
+  const [selectedRowIds, setSelectedRowIds] = useState([])
+  const { loading, deleteStudents, updateStudent } = useStudentCRUD()
+  const { props, rows, setRows } = useServerPagination({
+    fetchDataFunc: async (limit, page) => {
       const studentService = new StudentService()
+      const res = await studentService.getAllStudents({
+        limit,
+        page,
+      })
 
-      const res = await studentService.getAllStudent({})
-      const totalPages = res?.data?.metadata?.totalPages
+      return res.data.metadata
+    },
+  })
 
+  const STUDENT_INFO_COLUMNS = useMemo(
+    () => [
+      ...STUDENT_FIELDS,
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "Hành động",
+        getActions: ({ row }) => [
+          <GridActionsCellItem
+            key={1}
+            icon={<Edit />}
+            onClick={() => {
+              setCurrentStudent(row)
+              setEditDialogOpen(true)
+            }}
+            label="Sửa"
+          />,
+          <GridActionsCellItem
+            key={0}
+            icon={<Delete />}
+            color="error"
+            onClick={() => {
+              setSelectedRowIds([row.id])
+              setDeleteConfirmDialogOpen(true)
+            }}
+            label="Xoá"
+          />,
+        ],
+      },
+    ],
+    [],
+  )
 
-    })()
-  }, [])
+  const handleDeleteStudents = async () => {
+    if (selectedRowIds.length > 0) {
+      await deleteStudents(selectedRowIds, ({ data: { metadata } }) => {
+        if (metadata > 0) {
+          setRows((prev) => prev.filter((r) => !selectedRowIds.find((id) => r.id === id)))
+        }
+
+        setDeleteConfirmDialogOpen(false)
+        setSelectedRowIds([])
+      })
+    }
+  }
+
+  const handleEditStudent = async (id, studentData) => {
+    await updateStudent({ id, studentData }, ({ data: { metadata } }) => {
+      setRows((prev) => {
+        const clonedStudentsArr = [...prev]
+        const foundIndex = clonedStudentsArr.findIndex((s) => s.id === metadata.id)
+
+        if (foundIndex !== -1) {
+          clonedStudentsArr[foundIndex] = metadata
+        }
+
+        return clonedStudentsArr
+      })
+      setEditDialogOpen(false)
+      setCurrentStudent(null)
+    })
+  }
 
   const handleAddStudentButtonClicked = () => {
     navigate("/admin/student/create")
   }
 
+  const handleCloseEditStudentDialog = () => {
+    setEditDialogOpen(false)
+  }
+
+  const handleDeleteConfirmDialogClose = () => {
+    setDeleteConfirmDialogOpen(false)
+  }
+
+  const handleRowSelectionChanged = (selectedIds) => {
+    setSelectedRowIds(selectedIds)
+  }
+
+  const handleDeleteStudentBtnClicked = async () => {
+    setDeleteConfirmDialogOpen(true)
+  }
+
   return (
     <Box p={1} component="div" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <ConfirmDialog
+        loading={loading}
+        open={deleteConfirmDialogOpen}
+        title="Xoá học sinh"
+        body={`Bạn có chắc muốn xoá ${selectedRowIds.length} học sinh?`}
+        onClose={handleDeleteConfirmDialogClose}
+        onCancel={handleDeleteConfirmDialogClose}
+        onConfirm={handleDeleteStudents}
+      />
+      {currentStudent && (
+        <EditStudentFormDialog
+          onClose={handleCloseEditStudentDialog}
+          onCancel={handleCloseEditStudentDialog}
+          onSubmit={handleEditStudent}
+          open={editDialogOpen}
+          initValue={currentStudent}
+        />
+      )}
       <Toolbar sx={{ justifyContent: "space-between" }} disableGutters py={3}>
         <Box>
           <SearchBox sx={{ minWidth: "400px" }} label="Tìm kiếm học sinh" />
@@ -150,11 +145,16 @@ const AllStudents = () => {
         </Stack>
       </Toolbar>
       <PrimaryTable
+        rowSelectionModel={selectedRowIds}
+        onDeleteColumns={handleDeleteStudentBtnClicked}
+        onRowSelectionModelChange={handleRowSelectionChanged}
+        selectedRowIds={selectedRowIds}
         wrapperSx={{ flex: 1 }}
         rows={rows}
         columns={STUDENT_INFO_COLUMNS}
         title="Thông tin học sinh"
         autoPageSizeOnMount
+        {...props}
       />
     </Box>
   )
