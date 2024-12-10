@@ -1,0 +1,11 @@
+version: "3.0"
+services:
+  frontend:
+    build: .
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./.env
+    volumes:
+      - app/node_modules
+      - G:\codes\my_projects\student_management\frontend:/app
