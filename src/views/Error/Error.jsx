@@ -1,5 +1,7 @@
+import { Typography } from "@mui/material";
+
 const Error = () => {
-  return <div>Error</div>;
+  return <Typography variant="h2">Error</Typography>;
 };
 
 export default Error;

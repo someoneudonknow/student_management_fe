@@ -36,6 +36,7 @@ const RightPanel = ({ sx, onLoginModeClick }) => {
           Thực hiện đăng kí tài khoản
         </Typography>
         <RoundedButton
+          id="register-navigation-btn"
           onClick={onLoginModeClick}
           variant="outlined"
           sx={{ color: "white", borderColor: "white", mt: 1, px: 5, fontSize: "16px" }}

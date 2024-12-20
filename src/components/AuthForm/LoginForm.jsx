@@ -1,22 +1,26 @@
 import { useForm } from "react-hook-form";
 import FormTextInput from "../FormTextInput/FormTextInput";
-import { IconButton, Link, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import LoadingButton from "../UI/LoadingButton";
-import { AccountCircle, Key, Visibility, VisibilityOff } from "@mui/icons-material";
+import { AccountCircle } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
-import { useState } from "react";
+import { useUser } from "../../contexts/UserProvider/UserProvider";
+import { Link } from "react-router-dom";
+import FormPasswordInput from "../FormPasswordInput/FormPasswordInput";
+import { enqueueSnackbar } from "notistack";
 
 const LoginForm = ({ sx }) => {
   const { control, handleSubmit } = useForm();
-  const [showPass, setShowPass] = useState(false);
+  const { login, isLoading } = useUser()
 
-  const handleLogin = async (values) => {
-    console.log(values);
+  const handleLogin = async ({ username, password }) => {
+    const data = {
+      identifier: username,
+      password
+    }
+
+    await login(data)
   };
-
-  const toggleShowPassword = () => {
-    setShowPass(prev => !prev)
-  }
 
   return (
     <FormWrapper
@@ -37,6 +41,7 @@ const LoginForm = ({ sx }) => {
       </Typography>
       <FormTextInput
         name="username"
+        id="username"
         control={control}
         rules={{
           required: "Vui lòng nhập tên đăng nhập",
@@ -48,9 +53,10 @@ const LoginForm = ({ sx }) => {
         }}
         startIcon={<AccountCircle />}
       />
-      <FormTextInput
-        name="password"
+      <FormPasswordInput
         control={control}
+        name="password"
+        id="password"
         rules={{
           required: "Vui lòng nhập mật khẩu",
           minLength: {
@@ -59,16 +65,8 @@ const LoginForm = ({ sx }) => {
           }
         }}
         textFieldProps={{
-          sx: { mt: 3 },
-          fullWidth: true,
-          label: "Mật khẩu",
-          type: showPass ? "text" : "password"
+          sx: { mt: 3 }
         }}
-        startIcon={<Key />}
-        endIcon={
-          <IconButton onClick={toggleShowPassword}>
-            {showPass ? <Visibility /> : <VisibilityOff />}
-          </IconButton>}
       />
       <Typography
         variant="body2"
@@ -77,11 +75,12 @@ const LoginForm = ({ sx }) => {
         width="100%"
         mt={2}
       >
-        <Link>Quên mật khẩu?</Link>
+        <Link to="/auth/forgot-password">Quên mật khẩu?</Link>
       </Typography>
-
       <LoadingButton
-        sx={{ mt: "80px", py: 1.5 }}
+        id="login-btn"
+        loading={isLoading}
+        wrapperSx={{ mt: "80px", py: 1.5 }}
         type="submit"
         variant="contained"
         fullWidth

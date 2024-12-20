@@ -1,9 +1,11 @@
 import styled from "@emotion/styled"
 import { Inbox } from "@mui/icons-material"
-import { Avatar, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material"
+import { alpha, Avatar, Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material"
 import SideBarHeader from "./SideBarHeader"
-import { SIDE_BAR_WIDTH } from "../constants"
+import { SIDE_BAR_ITEMS, SIDE_BAR_WIDTH } from "../constants"
 import appLogo from "../../../../assets/images/logo.png"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
 
 const openedMixin = (theme) => ({
   width: SIDE_BAR_WIDTH,
@@ -45,6 +47,18 @@ const SideBar = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'open' })
 );
 
 const AdminSideBar = ({ open }) => {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const [currentPath, setCurrentPath] = useState()
+
+  useEffect(() => {
+    setCurrentPath(pathname)
+  }, [pathname])
+
+  const handleSidebarItemsClicked = (path) => {
+    navigate(path)
+  }
+
   return (
     <SideBar open={open} variant="permanent" sx={{
       backgroundColor: theme => theme.palette.background.paper
@@ -57,9 +71,10 @@ const AdminSideBar = ({ open }) => {
       </SideBarHeader>
       <Divider />
       <List>
-        {['Inbox'].map((text) => (
-          <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+        {SIDE_BAR_ITEMS.map(({ title, icon, path }) => (
+          <ListItem key={title} disablePadding sx={{ display: 'block', bgcolor: path === currentPath ? theme => alpha(theme.palette.action.hover, 0.1) : "" }}>
             <ListItemButton
+              onClick={() => handleSidebarItemsClicked(path)}
               sx={[
                 {
                   minHeight: 48,
@@ -89,14 +104,14 @@ const AdminSideBar = ({ open }) => {
                     },
                 ]}
               >
-                <Inbox />
+                {icon}
               </ListItemIcon>
-              {open && <ListItemText primary={text} />}
+              {open && <ListItemText primary={title} />}
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-    </SideBar>
+    </SideBar >
   )
 }
 

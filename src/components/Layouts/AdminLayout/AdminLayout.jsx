@@ -24,9 +24,9 @@ const AdminLayout = ({ children }) => {
       <CssBaseline />
       <SideBar open={sideBarOpen} handleClose={handleCloseSideBar} />
       <AdminAppBar open={sideBarOpen} handleSideBarClose={handleCloseSideBar} handleSideBarOpen={handleOpenSideBar} />
-      <Box component="div" sx={{ flexGrol: 1, display: "flex", flexDirection: "column" }}>
+      <Box component="div" sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <SideBarHeader />
-        <Box>
+        <Box sx={{ height: "100%", width: "100%" }}>
           {children}
         </Box>
       </Box>

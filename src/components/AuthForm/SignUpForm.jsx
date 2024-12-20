@@ -5,7 +5,7 @@ import LoadingButton from "../UI/LoadingButton";
 import { AccountCircle, AlternateEmail, Key, Visibility, VisibilityOff } from "@mui/icons-material";
 import FormWrapper from "./FormWrapper";
 import { useState } from "react";
-import { notEmailRegex } from "../../constants/regex";
+import { NOT_EMAIL_REGEX } from "../../constants/regex";
 import { useUser } from "../../contexts/UserProvider/UserProvider";
 
 const SignUpForm = ({ sx }) => {
@@ -73,7 +73,7 @@ const SignUpForm = ({ sx }) => {
         rules={{
           required: "Vui lòng nhập email",
           pattern: {
-            value: notEmailRegex,
+            value: NOT_EMAIL_REGEX,
             message: "Địa chỉ email không hợp lệ"
           }
         }}
@@ -110,11 +110,6 @@ const SignUpForm = ({ sx }) => {
         name="password-confirm"
         control={control}
         rules={{
-          required: "Vui lòng xác nhập mật khẩu",
-          minLength: {
-            value: 6,
-            message: "Mật khẩu tối thiểu 6 kí tự"
-          },
           validate: {
             isEqualPass: value => value === password || "Mật khẩu xác nhận không trùng khớp"
           }
@@ -132,6 +127,7 @@ const SignUpForm = ({ sx }) => {
           </IconButton>}
       />
       <LoadingButton
+        id="register-btn"
         loading={isLoading}
         wrapperSx={{ mt: "80px" }}
         sx={{ py: 1.5 }}

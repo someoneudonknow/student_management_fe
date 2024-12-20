@@ -1,24 +1,36 @@
-import { Home, People } from "@mui/icons-material"
+import { Book, CalendarMonth, FontDownload, Home, People, Person4 } from "@mui/icons-material"
 
 export const SIDE_BAR_WIDTH = `${270}px`
 
 export const SIDE_BAR_ITEMS = [
   {
     title: "Trang chủ",
-    icon: <Home />
+    icon: <Home />,
+    path: "/admin/dashboard",
   },
   {
     title: "Quản lý học sinh",
     icon: <People />,
-    childrens: [
-      {
-        title: "Thêm học sinh",
-        path: "/admin/students/add"
-      },
-      {
-        title: "Sửa thông tin",
-        path: "/admin/students/edit",
-      }
-    ]
-  }
+    path: "/admin/student",
+  },
+  {
+    title: "Quản lý lớp học",
+    icon: <FontDownload />,
+    path: "/admin/classes",
+  },
+  {
+    title: "Quản lý giáo viên",
+    icon: <Person4 />,
+    path: "/admin/teacher",
+  },
+  {
+    title: "Quản lý môn học",
+    icon: <Book />,
+    path: "/admin/subject",
+  },
+  {
+    title: "Lập lịch",
+    icon: <CalendarMonth />,
+    path: "/admin/schedule",
+  },
 ]

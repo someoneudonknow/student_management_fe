@@ -1,11 +1,7 @@
 import { Outlet } from "react-router-dom";
 
 const AppRoot = () => {
-  return (
-    <main>
-      <Outlet />
-    </main>
-  );
+  return <Outlet />
 };
 
 export default AppRoot;

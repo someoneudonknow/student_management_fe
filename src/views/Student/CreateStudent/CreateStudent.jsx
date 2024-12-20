@@ -1,12 +1,7 @@
-import { Box } from "@mui/material";
 import CreateStudentForm from "../../../components/CreateStudentForm/CreateStudentForm";
 
 const CreateStudent = () => {
-  return (
-    <Box py={2}>
-      <CreateStudentForm />
-    </Box>
-  );
-};
+  return <CreateStudentForm />;
+}
 
 export default CreateStudent;
