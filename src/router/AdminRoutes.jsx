@@ -7,6 +7,8 @@ import CreateTeacher from "../views/Teacher/CreateTeacher/CreateTeacher"
 import AllTeacher from "../views/Teacher/AllTeachers/AllTeacher"
 import AllSubjects from "../views/Subject/AllSubjects/AllSubjects"
 import CreateSchedule from "../views/Schedule/CreateSchedule/CreateSchedule.jsx"
+import AllClasses from "../views/Class/AllClasses/AllClasses.jsx"
+import ClassInfo from "../views/Class/ClassInfo/ClassInfo.jsx"
 
 const AdminRoutes = () => {
   return (
@@ -24,6 +26,8 @@ const AdminRoutes = () => {
         <Route path="student/create" element={<CreateStudent />} />
         <Route path="teacher" element={<AllTeacher />} />
         <Route path="teacher/create" element={<CreateTeacher />} />
+        <Route path="classes/:classId" element={<ClassInfo />} />
+        <Route exact path="classes" element={<AllClasses />} />
         <Route path="subject" element={<AllSubjects />} />
         <Route path="schedule" element={<CreateSchedule />} />
       </Route>

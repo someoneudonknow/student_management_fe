@@ -10,6 +10,18 @@ class SubjectService extends BaseService {
   async getSubjects() {
     return await this.get("/")
   }
+
+  async create(data) {
+    return await this.post("", data)
+  }
+
+  async deleteSubject(id) {
+    return await this.delete(`/${id}`)
+  }
+
+  async update(id, payload) {
+    return await this.patch(`/${id}`, payload)
+  }
 }
 
-export default SubjectService;
+export default SubjectService

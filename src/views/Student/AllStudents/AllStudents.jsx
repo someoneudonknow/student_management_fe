@@ -2,32 +2,44 @@ import { Box, Button, Stack, Toolbar } from "@mui/material"
 import EditStudentFormDialog from "../../../components/EditStudentFormDialog/EditStudentFormDialog.jsx"
 import SearchBox from "../../../components/SearchBox/SearchBox"
 import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
-import { Add, Delete, Edit } from "@mui/icons-material"
+import { Add, Delete, Edit, FontDownload } from "@mui/icons-material"
 import useServerPagination from "../../../hooks/useServerPagination.js"
 import { useNavigate } from "react-router-dom"
 import StudentService from "../../../services/StudentService"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef } from "react"
 import ConfirmDialog from "../../../components/ConfirmDialog/ConfirmDialog.jsx"
 import useStudentCRUD from "../../../hooks/useStudentCRUD.js"
 import { GridActionsCellItem } from "@mui/x-data-grid"
 import { STUDENT_FIELDS } from "./constants/index.js"
+import { generateODataQueryString } from "../../../utils/index.js"
+import AddStudentDialog from "../../../components/ClassesSelection/ClassesSelection.jsx"
+import { enqueueSnackbar } from "notistack"
 
 const AllStudents = () => {
   const navigate = useNavigate()
+  const studentServiceRef = useRef(new StudentService())
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [currentStudent, setCurrentStudent] = useState(null)
   const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false)
   const [selectedRowIds, setSelectedRowIds] = useState([])
+  const [openAddStudentsToClass, setOpenAddStudentsToClass] = useState(false)
   const { loading, deleteStudents, updateStudent } = useStudentCRUD()
-  const { props, rows, setRows } = useServerPagination({
-    fetchDataFunc: async (limit, page) => {
-      const studentService = new StudentService()
-      const res = await studentService.getAllStudents({
-        limit,
-        page,
-      })
+  const { props, rows, setRows, setFilterObj } = useServerPagination({
+    fetchDataFunc: async (limit, page, filterObj) => {
+      const skip = (page - 1) * limit
 
-      return res.data.metadata
+      filterObj.skip = skip
+      filterObj.top = limit
+
+      const filterQuery = generateODataQueryString(filterObj)
+      const res = await studentServiceRef.current.filterStudent(filterQuery)
+      const data = res.data.metadata
+
+      return {
+        totalPages: data?.totalPages || Math.ceil(data.count / limit),
+        page,
+        list: data.list,
+      }
     },
   })
 
@@ -114,6 +126,46 @@ const AllStudents = () => {
     setDeleteConfirmDialogOpen(true)
   }
 
+  const onSearchChange = (text) => {
+    setFilterObj({
+      ...(text.trim() !== "" && {
+        filters: {
+          or: [
+            { function: "substringof", args: [text.trim(), "first_name"] },
+            { function: "substringof", args: [text.trim(), "last_name"] },
+            { function: "substringof", args: [text.trim(), "email"] },
+          ],
+        },
+      }),
+    })
+  }
+
+  const handleCloseAddStudentToClassDialog = () => {
+    setOpenAddStudentsToClass(false)
+  }
+
+  const handleOpenAddStudentToClassDialog = () => {
+    setOpenAddStudentsToClass(true)
+  }
+
+  const handleAddToClass = async (selectedClass) => {
+    const selectedIds = selectedRowIds
+    try {
+      await studentServiceRef.current.addStudentToClass({
+        stuIds: selectedIds,
+        classId: selectedClass.id,
+      })
+
+      setOpenAddStudentsToClass(false)
+      enqueueSnackbar("Đã thêm vào lớp thành công", { variant: "success" })
+    } catch (e) {
+      console.log(e)
+      enqueueSnackbar(e.message, { variant: "error" })
+    }
+
+    setSelectedRowIds([])
+  }
+
   return (
     <Box p={1} component="div" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <ConfirmDialog
@@ -124,6 +176,12 @@ const AllStudents = () => {
         onClose={handleDeleteConfirmDialogClose}
         onCancel={handleDeleteConfirmDialogClose}
         onConfirm={handleDeleteStudents}
+      />
+      <AddStudentDialog
+        onClose={handleCloseAddStudentToClassDialog}
+        onCancel={handleCloseAddStudentToClassDialog}
+        onSubmit={handleAddToClass}
+        open={openAddStudentsToClass}
       />
       {currentStudent && (
         <EditStudentFormDialog
@@ -136,10 +194,30 @@ const AllStudents = () => {
       )}
       <Toolbar sx={{ justifyContent: "space-between" }} disableGutters py={3}>
         <Box>
-          <SearchBox sx={{ minWidth: "400px" }} label="Tìm kiếm học sinh" />
+          <SearchBox
+            onChange={onSearchChange}
+            debounceDelay={500}
+            sx={{ minWidth: "400px" }}
+            label="Tìm kiếm học sinh"
+          />
         </Box>
-        <Stack>
-          <Button startIcon={<Add />} variant="outlined" onClick={handleAddStudentButtonClicked}>
+        <Stack spacing={2} direction="row">
+          {selectedRowIds.length > 0 && (
+            <Button
+              onClick={handleOpenAddStudentToClassDialog}
+              startIcon={<FontDownload />}
+              color="info"
+              variant="contained"
+            >
+              Thêm vào lớp
+            </Button>
+          )}
+          <Button
+            startIcon={<Add />}
+            variant="contained"
+            color="info"
+            onClick={handleAddStudentButtonClicked}
+          >
             Thêm học sinh
           </Button>
         </Stack>

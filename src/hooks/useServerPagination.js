@@ -10,6 +10,7 @@ const useServerPagination = ({ pageSize = 50, fetchDataFunc }) => {
   const [loading, setLoading] = useState(false)
   const [rows, setRows] = useState([])
   const [totalPages, setTotalPages] = useState(-1)
+  const [filterObj, setFilterObj] = useState({})
 
   const rowCount = useMemo(() => {
     return totalPages !== -1 ? totalPages * paginationModel.pageSize : 0
@@ -22,6 +23,7 @@ const useServerPagination = ({ pageSize = 50, fetchDataFunc }) => {
         const { list, totalPages } = await fetchDataFunc(
           paginationModel.pageSize,
           paginationModel.page + 1,
+          filterObj
         )
 
         setRows(list || [])
@@ -33,7 +35,7 @@ const useServerPagination = ({ pageSize = 50, fetchDataFunc }) => {
     })()
 
     // eslint-disable-next-line
-  }, [paginationModel])
+  }, [paginationModel, filterObj])
 
   const handlePaginationModelChanged = useCallback((paginationModel) => {
     setPaginationModel(paginationModel)
@@ -42,6 +44,7 @@ const useServerPagination = ({ pageSize = 50, fetchDataFunc }) => {
   return {
     rows: rows,
     setRows,
+    setFilterObj,
     props: {
       paginationMode: "server",
       rowCount,

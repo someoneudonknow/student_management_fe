@@ -7,6 +7,13 @@ class StudentService extends BaseService {
     super(BASE_URL)
   }
 
+  async addStudentToClass({ stuIds, classId }) {
+    return await this.patch("", {
+      userIds: stuIds,
+      classId
+    })
+  }
+
   async createStudent(payload) {
     return await this.post("", payload)
   }

@@ -22,7 +22,6 @@ const EditTeacherForm = ({ onCancel, onSubmit, initValue }) => {
       isRetired: initValue?.is_retired,
     },
   })
-  console.log(initValue)
 
   const handleCancel = () => {
     onCancel()

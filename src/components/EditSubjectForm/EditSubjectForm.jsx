@@ -1,11 +1,16 @@
 import { Box, Button, Stack, Typography } from "@mui/material"
 import Grid from "@mui/material/Grid2"
 import FormTextInput from "../FormTextInput/FormTextInput"
-import { INTEGER_NUMBER_REGEX, NAME_NOT_INCLUDE_NUMBER_REGEX } from "../../constants/regex"
+import { INTEGER_NUMBER_REGEX } from "../../constants/regex"
 import { useForm } from "react-hook-form"
 
-const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loading }) => {
-  const { control, handleSubmit } = useForm()
+const EditSubjectForm = ({ onCancel, onSubmit, initValue, loading }) => {
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      name: initValue?.name ?? "",
+      numberOfPeriod: initValue.number_of_period ?? "",
+    },
+  })
 
   return (
     <Box
@@ -15,7 +20,7 @@ const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loa
     >
       <Grid container spacing={2}>
         <Grid size={12}>
-          <Typography variant="h6">{title}</Typography>
+          <Typography variant="h6">Chỉnh sửa môn học</Typography>
         </Grid>
         <Grid size={12}>
           <FormTextInput
@@ -61,4 +66,4 @@ const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loa
   )
 }
 
-export default CreateSubjectForm
+export default EditSubjectForm

@@ -3,9 +3,8 @@ import { InputAdornment, TextField } from "@mui/material"
 import debounce from "../../helpers/debounce.js"
 
 const SearchBox = ({ label = "Search", debounceDelay = 0, onChange, ...rest }) => {
-
   const handleSearchChange = (e) => {
-    const searchText = e.target?.value;
+    const searchText = e.target?.value
     onChange(searchText)
   }
 
@@ -18,7 +17,7 @@ const SearchBox = ({ label = "Search", debounceDelay = 0, onChange, ...rest }) =
           <InputAdornment position="end">
             <Search />
           </InputAdornment>
-        )
+        ),
       }}
       size="small"
       {...rest}

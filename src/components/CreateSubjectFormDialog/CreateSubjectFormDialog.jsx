@@ -1,9 +1,12 @@
 import CreateSubjectForm from "../CreateSubjectForm/CreateSubjectForm"
 import PrimaryDialog from "../PrimaryDialog/PrimaryDialog"
 
-const CreateSubjectFormDialog = ({ onCancel, onSubmit, ...rest }) => {
+const CreateSubjectFormDialog = ({ onCancel, onSubmit, loading, ...rest }) => {
   return (
-    <PrimaryDialog body={<CreateSubjectForm onCancel={onCancel} onSubmit={onSubmit} />} {...rest} />
+    <PrimaryDialog
+      body={<CreateSubjectForm loading={loading} onCancel={onCancel} onSubmit={onSubmit} />}
+      {...rest}
+    />
   )
 }
 

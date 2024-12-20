@@ -1,10 +1,9 @@
-import { Box, Button, Stack, Typography } from "@mui/material"
-import Grid from "@mui/material/Grid2"
-import FormTextInput from "../FormTextInput/FormTextInput"
-import { INTEGER_NUMBER_REGEX, NAME_NOT_INCLUDE_NUMBER_REGEX } from "../../constants/regex"
+import { Grid2 as Grid, Box, Button, Stack, Typography, InputLabel } from "@mui/material"
 import { useForm } from "react-hook-form"
+import FormTextInput from "../../FormTextInput/FormTextInput"
+import FormRadioGroup from "../../FormRadioGroup/FormRadioGroup"
 
-const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loading }) => {
+const CreateClassForm = ({ onCancel, onSubmit, title = "Thêm môn học", loading }) => {
   const { control, handleSubmit } = useForm()
 
   return (
@@ -19,26 +18,28 @@ const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loa
         </Grid>
         <Grid size={12}>
           <FormTextInput
-            name="name"
+            name="className"
             control={control}
-            textFieldProps={{ label: "Tên môn học ", fullWidth: true, size: "small" }}
+            textFieldProps={{ label: "Tên lớp học", fullWidth: true, size: "small" }}
             rules={{
-              required: "Vui lòng nhập tên môn học",
+              required: "Vui lòng nhập tên lớp học",
             }}
           />
         </Grid>
         <Grid size={12}>
-          <FormTextInput
-            name="numberOfPeriod"
+          <InputLabel sx={{ fontSize: "17px", color: "black" }}>Khối</InputLabel>
+          <FormRadioGroup
+            name="grade"
             control={control}
-            textFieldProps={{ label: "Tổng số tiết", fullWidth: true, size: "small" }}
-            rules={{
-              required: "Vui lòng nhập tổng số tiết",
-              pattern: {
-                value: INTEGER_NUMBER_REGEX,
-                message: "Sô tiết phải là giá trị số",
-              },
-            }}
+            label="Khối"
+            orientation="row"
+            sx={{ justifyContent: "flex-start", gap: "10px" }}
+            radioOption={[
+              { value: "10", label: "10" },
+              { value: "11", label: "11" },
+              { value: "12", label: "12" },
+            ]}
+            defaultVal="10"
           />
         </Grid>
         <Grid size={12}>
@@ -52,7 +53,7 @@ const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loa
               Huỷ
             </Button>
             <Button variant="contained" type="submit" disable={loading} sx={{ minWidth: "120px" }}>
-              Lưu
+              Tạo
             </Button>
           </Stack>
         </Grid>
@@ -61,4 +62,4 @@ const CreateSubjectForm = ({ onCancel, onSubmit, title = "Thêm môn học", loa
   )
 }
 
-export default CreateSubjectForm
+export default CreateClassForm

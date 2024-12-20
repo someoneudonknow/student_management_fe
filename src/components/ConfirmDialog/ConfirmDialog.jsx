@@ -9,7 +9,8 @@ const ConfirmDialog = ({
   onClose,
   confirmBtnProps = {},
   cancelBtnProps = {},
-  loading = false
+  loading = false,
+  ...rest
 }) => {
   return (
     <PrimaryDialog
@@ -36,6 +37,7 @@ const ConfirmDialog = ({
           },
         },
       ]}
+      {...rest}
     />
   )
 }

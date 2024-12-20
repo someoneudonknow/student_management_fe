@@ -10,6 +10,22 @@ class ClassService extends BaseService {
   async getClasses() {
     return await this.get("/")
   }
+
+  async getClass(id) {
+    return await this.get(`/${id}`)
+  }
+
+  async create(payload) {
+    return await this.post("/", payload)
+  }
+
+  async update(id, payload) {
+    return await this.patch(`/${id}`, payload)
+  }
+
+  async remove(id) {
+    return await this.get("/")
+  }
 }
 
 export default ClassService
