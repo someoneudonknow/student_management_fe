@@ -18,6 +18,14 @@ class ScheduleService extends BaseService {
   async getSchedules() {
     return await this.get("/")
   }
+
+  async getTeacherSchedules() {
+    return await this.get("/teachers")
+  }
+
+  async getSubjectSchedule() {
+    return await this.get("/teachers")
+  }
 }
 
 export default ScheduleService

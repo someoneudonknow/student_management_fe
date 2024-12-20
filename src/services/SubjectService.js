@@ -22,6 +22,10 @@ class SubjectService extends BaseService {
   async update(id, payload) {
     return await this.patch(`/${id}`, payload)
   }
+
+  async addSubject(data) {
+    return await this.post("/", data)
+  }
 }
 
 export default SubjectService

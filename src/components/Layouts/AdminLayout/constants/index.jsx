@@ -29,7 +29,7 @@ export const SIDE_BAR_ITEMS = [
     path: "/admin/subject",
   },
   {
-    title: "Thêm thời khoá biểu",
+    title: "Lập lịch",
     icon: <CalendarMonth />,
     path: "/admin/schedule",
   },
