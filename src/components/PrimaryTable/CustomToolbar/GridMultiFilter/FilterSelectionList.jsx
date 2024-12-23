@@ -1,24 +1,21 @@
 import { Stack } from "@mui/material"
 import FilterSelection from "./FilterSelection"
-import { mapRange } from "../../../../utils"
-import { useState } from "react"
 
-const FilterSelectionList = ({ onChange, fieldAmount = 1, filterableCols, operators }) => {
-  const [fields, setFields] = useState([])
-
-  const handleFieldRemove = (i) => {
-    console.log(i)
-  }
-
+const FilterSelectionList = ({ onRemove, multiFilterMode, fields, filterableCols, onSelectionChange, onMultiFilterModeChange, operators }) => {
   return (
     <Stack sx={{ flex: 1, overflow: "auto", pb: 1 }} spacing={1}>
-      {mapRange(0, fieldAmount).map((_, i) => (
+      {fields.map((field, i) => (
         <FilterSelection
+          value={field}
+          onGroupConditionChange={onMultiFilterModeChange}
+          canChangeGroupCondition={i === 1}
           noGroupConditions={i === 0}
-          key={i}
+          key={field.id}
           columns={filterableCols}
           operators={operators}
-          onRemove={() => handleFieldRemove(i)}
+          onRemove={() => onRemove(field.id)}
+          multiFilterMode={multiFilterMode}
+          onSelectionChange={(data) => onSelectionChange(field.id, data)}
         />
       ))}
     </Stack>

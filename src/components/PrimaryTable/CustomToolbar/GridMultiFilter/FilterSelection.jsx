@@ -12,6 +12,7 @@ import {
   Button,
 } from "@mui/material"
 import { useEffect, useId, useMemo, useState } from "react"
+import moment from "moment"
 
 const groupConditions = [
   {
@@ -30,60 +31,118 @@ const FilterSelection = ({
   onRemove,
   onSelectionChange,
   noGroupConditions = true,
+  multiFilterMode,
+  canChangeGroupCondition,
+  onGroupConditionChange,
+  value,
 }) => {
-  const [selection, setSelection] = useState({
-    field: columns[0].field,
-    value: "",
-    operator: operators[0].value,
-    ...(!noGroupConditions && { groupCondition: groupConditions[0].value }),
-  })
+  const [selection, setSelection] = useState(value)
+  const selectedColumn = useMemo(() => 
+    columns.find(col => col.field === value?.field), 
+    [columns, value?.field]
+  )
 
   const gridSize = useMemo(() => {
     if (!noGroupConditions) return 3
     return 4
   }, [noGroupConditions])
 
-  const filterableCols = useMemo(
-    () => columns.map((c) => ({ text: c.headerName, value: c.field })),
-    [columns],
-  )
-
-  useEffect(() => {
-    onSelectionChange && onSelectionChange(selection)
-    // eslint-disable-next-line
-  }, [selection])
-
   const handleColumnSelectionChanged = (e) => {
-    const value = e.target.value
-    setSelection((prev) => ({ ...prev, field: value }))
+    const field = e.target.value
+    const selectedCol = columns.find(col => col.field === field)
+    const newSelection = { 
+      ...selection, 
+      field,
+      // Reset value when changing column type
+      value: ""
+    }
+    setSelection(newSelection)
+    onSelectionChange(newSelection)
   }
 
   const handleOperatorSelectionChanged = (e) => {
-    const value = e.target.value
-    setSelection((prev) => ({ ...prev, operator: value }))
+    const operator = e.target.value
+    const newSelection = { ...selection, operator }
+    setSelection(newSelection)
+    onSelectionChange(newSelection)
   }
 
   const handleGroupConditionChanged = (e) => {
+    if(!canChangeGroupCondition) return
     const value = e.target.value
-    setSelection((prev) => ({ ...prev, groupCondition: value }))
+    onGroupConditionChange(value)
   }
 
   const handleValueChanged = (e) => {
-    const value = e.target.value
-    setSelection((prev) => ({ ...prev, value }))
+    const newValue = e.target.value
+    const newSelection = { ...selection, value: newValue }
+    setSelection(newSelection)
+    onSelectionChange(newSelection)
+  }
+
+  const handleDateValueChanged = (e) => {
+    const newValue = e.target.value
+    // Convert from input format to DD/MM/YYYY
+    const formattedDate = moment(newValue).format('DD/MM/YYYY')
+    const newSelection = { ...selection, value: formattedDate }
+    setSelection(newSelection)
+    onSelectionChange(newSelection)
+  }
+
+  const renderValueInput = () => {
+    const type = selectedColumn?.type || 'string'
+    
+    switch(type) {
+      case 'date':
+        return (
+          <TextField
+            type="date"
+            fullWidth
+            variant="standard"
+            label="Giá trị"
+            onChange={handleDateValueChanged}
+            // Convert DD/MM/YYYY to YYYY-MM-DD for input
+            value={value?.value ? moment(value.value, 'DD/MM/YYYY').format('YYYY-MM-DD') : ""}
+            InputLabelProps={{ shrink: true }}
+          />
+        )
+      case 'number':
+        return (
+          <TextField
+            type="number"
+            fullWidth
+            variant="standard"
+            label="Giá trị"
+            onChange={handleValueChanged}
+            value={value?.value || ""}
+          />
+        )
+      default:
+        return (
+          <TextField
+            fullWidth
+            variant="standard"
+            label="Giá trị"
+            onChange={handleValueChanged}
+            value={value?.value || ""}
+          />
+        )
+    }
   }
 
   return (
-    <Grid container sx={{ width: "600px" }} spacing={1}>
+    <Grid container spacing={2}>
       {!noGroupConditions && (
-        <Grid size={gridSize}>
-          <Box sx={{ display: "flex", alignItems: "end", justifyContent: "center", width: "100%" }}>
+        <Grid size={gridSize} item>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton size="small" onClick={onRemove}>
               <Close />
             </IconButton>
             <FilterSelectionItem
+              disabled={!canChangeGroupCondition}
               onSelectionChange={handleGroupConditionChanged}
-              defaultValue={groupConditions[0].value}
+              defaultValue={multiFilterMode}
+              value={multiFilterMode}
               menuItems={groupConditions}
             />
           </Box>
@@ -91,9 +150,13 @@ const FilterSelection = ({
       )}
       <Grid size={gridSize} item>
         <FilterSelectionItem
-          defaultValue={filterableCols[0].value}
+          defaultValue={columns[0].field}
+          value={value?.field}
           label="Cột"
-          menuItems={filterableCols}
+          menuItems={columns.map(col => ({
+            text: col.headerName || col.field,
+            value: col.field
+          }))}
           onSelectionChange={handleColumnSelectionChanged}
         />
       </Grid>
@@ -101,22 +164,13 @@ const FilterSelection = ({
         <FilterSelectionItem
           defaultValue={operators[0].value}
           label="Toán tử"
+          value={value?.operator}
           menuItems={operators}
           onSelectionChange={handleOperatorSelectionChanged}
-        />{" "}
+        />
       </Grid>
       <Grid size={gridSize} item>
-        <TextField
-          autoFocus
-          placeholder="Giá trị cần lọc"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          fullWidth
-          variant="standard"
-          label="Giá trị"
-          onChange={handleValueChanged}
-        />
+        {renderValueInput()}
       </Grid>
     </Grid>
   )
@@ -130,13 +184,16 @@ const FilterSelectionItem = ({
   defaultValue,
   formControlProps = {},
   onSelectionChange,
+  disabled,
+  value
 }) => {
   const id = useId()
 
   return (
-    <FormControl fullWidth variant="standard" {...formControlProps}>
+    <FormControl {...formControlProps} disabled={disabled} fullWidth variant="standard">
       <InputLabel id={`${id}:${label}`}>{label}</InputLabel>
       <Select
+        value={value}
         onChange={onSelectionChange}
         defaultValue={defaultValue}
         labelId={`${id}:${label}`}

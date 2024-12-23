@@ -21,7 +21,7 @@ export const STUDENT_FIELDS = [
     field: "gender",
     headerName: "Giới tính",
     flex: 1,
-    valueFormatter: (params) => (params === "Male" ? "Nam" : "Nữ"),
+    // valueFormatter: (params) => (params === "Male" ? "Nam" : "Nữ"),
   },
   {
     field: "birthday",
@@ -49,6 +49,7 @@ export const STUDENT_FIELDS = [
     headerName: "Địa chỉ",
     flex: 2,
     valueFormatter: (value) => formatAddressToString(value),
+    filterable: false,
   },
   {
     field: "Class",
@@ -57,5 +58,6 @@ export const STUDENT_FIELDS = [
     valueFormatter: (value) => {
       return value?.name ? value.name : "Chưa chọn lớp"
     },
+    filterable: false,
   },
 ]

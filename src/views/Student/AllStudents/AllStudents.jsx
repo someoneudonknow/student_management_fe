@@ -35,7 +35,6 @@ const AllStudents = () => {
       const res = await studentServiceRef.current.filterStudent(filterQuery)
       const data = res.data.metadata
 
-      console.log(data)
       return {
         totalPages: data?.totalPages || Math.ceil(data.count / limit),
         page,
@@ -43,6 +42,15 @@ const AllStudents = () => {
       }
     },
   })
+
+  const handleFilterChange = (filtersObj) => {
+    if(!filtersObj) {
+      setFilterObj({})
+      return;
+    }
+
+    setFilterObj({ filters: filtersObj })
+  }
 
   const STUDENT_INFO_COLUMNS = useMemo(
     () => [
@@ -224,6 +232,7 @@ const AllStudents = () => {
         </Stack>
       </Toolbar>
       <PrimaryTable
+        onFilterChange={handleFilterChange}
         rowSelectionModel={selectedRowIds}
         onDeleteColumns={handleDeleteStudentBtnClicked}
         onRowSelectionModelChange={handleRowSelectionChanged}

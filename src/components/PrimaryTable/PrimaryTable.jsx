@@ -8,6 +8,7 @@ import { localeText } from "./constants"
 const PrimaryTable = ({
   title = "",
   onDeleteColumns,
+  onFilterChange,
   selectedRowIds,
   paginationModel = { pageSize: 25 },
   pageSizeOptions = [25, 50, 100],
@@ -57,6 +58,7 @@ const PrimaryTable = ({
           slotProps={{
             toolbar: {
               showQuickFilter: true,
+              onFilterChange: onFilterChange,
             },
           }}
           checkboxSelection

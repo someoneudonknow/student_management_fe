@@ -5,9 +5,8 @@ import SearchBox from "../../../components/SearchBox/SearchBox"
 import { Add, Delete, Edit } from "@mui/icons-material"
 import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
 import useServerPagination from "../../../hooks/useServerPagination"
-import useStudentCRUD from "../../../hooks/useStudentCRUD"
 import { useMemo, useState } from "react"
-import { TEACHER_FIELDS } from "./constants/index.js"
+import { TEACHER_FIELDS } from "./constants/index.jsx"
 import { GridActionsCellItem } from "@mui/x-data-grid"
 import TeacherService from "../../../services/TeacherService.js"
 import useTeacherCRUD from "../../../hooks/useTeacherCRUD.js"
@@ -32,12 +31,20 @@ const AllTeachers = () => {
       const teacherService = new TeacherService()
 
       const result = await teacherService.filterTeacher(filterQuery)
-      console.log(result)
 
       return result.data.metadata
     },
   })
 
+  const handleFilterChange = (filtersObj) => {
+    if(!filtersObj) {
+      setFilterObj({})
+      return;
+    }
+
+    setFilterObj({ filters: filtersObj })
+  }
+  
   const TEACHER_FIELDS_COLUMNS = useMemo(
     () => [
       ...TEACHER_FIELDS,
@@ -178,6 +185,7 @@ const AllTeachers = () => {
         columns={TEACHER_FIELDS_COLUMNS}
         title="Thông tin giáo viên"
         autoPageSizeOnMount
+        onFilterChange={handleFilterChange}
         {...props}
       />
     </Box>

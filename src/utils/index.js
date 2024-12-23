@@ -46,20 +46,41 @@ export const mapRange = (from, to) => {
 export const generateODataQueryString = (options) => {
   const { filters, top, skip, select, orderby } = options
 
+  const formatValue = (value, field) => {
+    if (value === null || value === undefined) return 'null'
+    
+    if (value instanceof Date || (typeof value === 'string' && !isNaN(Date.parse(value)))) {
+      return `datetime'${moment(value).format("YYYY-MM-DDTHH:mm:ss")}'`
+    }
+
+    if (typeof value === 'string' && /^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+      const [day, month, year] = value.split('/')
+      const date = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD')
+      if (date.isValid()) {
+        return `datetime'${date.format("YYYY-MM-DDTHH:mm:ss")}'`
+      }
+    }
+    
+    if (typeof value === 'string') {
+      return `'${value}'`
+    }
+    
+    return value.toString()
+  }
+
   const buildFilter = (filter) => {
     if (Array.isArray(filter)) {
       return filter.map(buildFilter).join(" and ")
     } else if (typeof filter === "object" && filter.operator) {
       const { field, operator, value } = filter
-      let formattedValue = typeof value === "string" ? `'${value}'` : value // Quote strings
-      return `${field} ${operator} ${formattedValue}`
+      return `${field} ${operator} ${formatValue(value, field)}`
     } else if (typeof filter === "object" && (filter.and || filter.or)) {
       const groupType = filter.and ? "and" : "or"
       const conditions = filter.and || filter.or
       return `(${conditions.map(buildFilter).join(` ${groupType} `)})`
     } else if (typeof filter === "object" && filter.function) {
       const { function: funcName, args } = filter
-      return `${funcName}('${args[0]}', ${args[1]})`
+      return `${funcName}(${args.map(arg => formatValue(arg)).join(', ')})`
     }
     return ""
   }
