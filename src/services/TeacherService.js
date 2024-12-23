@@ -30,7 +30,7 @@ class TeacherService extends BaseService {
   }
 
   async filterTeacher(queryString) {
-    return await this.get(`/filter?${queryString}`)
+    return await this.get(`/filters?${queryString}`)
   }
 }
 

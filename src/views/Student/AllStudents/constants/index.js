@@ -51,12 +51,11 @@ export const STUDENT_FIELDS = [
     valueFormatter: (value) => formatAddressToString(value),
   },
   {
-    field: "class",
+    field: "Class",
     headerName: "lớp học",
     flex: 1,
     valueFormatter: (value) => {
-      console.log(value)
-      if (!value) return "NULL"
+      return value?.name ? value.name : "Chưa chọn lớp"
     },
   },
 ]

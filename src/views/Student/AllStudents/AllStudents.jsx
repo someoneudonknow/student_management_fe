@@ -35,6 +35,7 @@ const AllStudents = () => {
       const res = await studentServiceRef.current.filterStudent(filterQuery)
       const data = res.data.metadata
 
+      console.log(data)
       return {
         totalPages: data?.totalPages || Math.ceil(data.count / limit),
         page,

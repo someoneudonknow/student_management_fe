@@ -16,7 +16,7 @@ const CustomToolBar = () => {
       <GridColumnManager />
       <GridToolbarExport variant="contained" csvOptions={{ utf8WithBom: true }} />
       <GridToolbarDensitySelector />
-      {/* <GridMultiFilter /> */}
+      <GridMultiFilter />
     </GridToolbarContainer>
   )
 }

@@ -8,8 +8,9 @@ import {
   Select,
   Stack,
   TextField,
+  Grid2 as Grid,
+  Button,
 } from "@mui/material"
-import Grid from "@mui/material/Grid2"
 import { useEffect, useId, useMemo, useState } from "react"
 
 const groupConditions = [
@@ -23,13 +24,24 @@ const groupConditions = [
   },
 ]
 
-const FilterSelection = ({ columns, operators, onSelectionChange, noGroupConditions = true }) => {
+const FilterSelection = ({
+  columns,
+  operators,
+  onRemove,
+  onSelectionChange,
+  noGroupConditions = true,
+}) => {
   const [selection, setSelection] = useState({
     field: columns[0].field,
     value: "",
     operator: operators[0].value,
     ...(!noGroupConditions && { groupCondition: groupConditions[0].value }),
   })
+
+  const gridSize = useMemo(() => {
+    if (!noGroupConditions) return 3
+    return 4
+  }, [noGroupConditions])
 
   const filterableCols = useMemo(
     () => columns.map((c) => ({ text: c.headerName, value: c.field })),
@@ -62,43 +74,51 @@ const FilterSelection = ({ columns, operators, onSelectionChange, noGroupConditi
   }
 
   return (
-    <Box sx={{ width: "600px", gap: 1, display: "flex", justifyContent: "center" }} spacing={1}>
+    <Grid container sx={{ width: "600px" }} spacing={1}>
       {!noGroupConditions && (
-        <Box width="100%" sx={{ display: "flex", alignItems: "end" }}>
-          <IconButton size="small">
-            <Close />
-          </IconButton>
-          <FilterSelectionItem
-            onSelectionChange={handleGroupConditionChanged}
-            defaultValue={groupConditions[0].value}
-            menuItems={groupConditions}
-          />
-        </Box>
+        <Grid size={gridSize}>
+          <Box sx={{ display: "flex", alignItems: "end", justifyContent: "center", width: "100%" }}>
+            <IconButton size="small" onClick={onRemove}>
+              <Close />
+            </IconButton>
+            <FilterSelectionItem
+              onSelectionChange={handleGroupConditionChanged}
+              defaultValue={groupConditions[0].value}
+              menuItems={groupConditions}
+            />
+          </Box>
+        </Grid>
       )}
-      <FilterSelectionItem
-        defaultValue={filterableCols[0].value}
-        label="Cột"
-        menuItems={filterableCols}
-        onSelectionChange={handleColumnSelectionChanged}
-      />
-      <FilterSelectionItem
-        defaultValue={operators[0].value}
-        label="Toán tử"
-        menuItems={operators}
-        onSelectionChange={handleOperatorSelectionChanged}
-      />
-      <TextField
-        autoFocus
-        placeholder="Giá trị cần lọc"
-        InputLabelProps={{
-          shrink: true,
-        }}
-        fullWidth
-        variant="standard"
-        label="Giá trị"
-        onChange={handleValueChanged}
-      />
-    </Box>
+      <Grid size={gridSize} item>
+        <FilterSelectionItem
+          defaultValue={filterableCols[0].value}
+          label="Cột"
+          menuItems={filterableCols}
+          onSelectionChange={handleColumnSelectionChanged}
+        />
+      </Grid>
+      <Grid size={gridSize} item>
+        <FilterSelectionItem
+          defaultValue={operators[0].value}
+          label="Toán tử"
+          menuItems={operators}
+          onSelectionChange={handleOperatorSelectionChanged}
+        />{" "}
+      </Grid>
+      <Grid size={gridSize} item>
+        <TextField
+          autoFocus
+          placeholder="Giá trị cần lọc"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          fullWidth
+          variant="standard"
+          label="Giá trị"
+          onChange={handleValueChanged}
+        />
+      </Grid>
+    </Grid>
   )
 }
 

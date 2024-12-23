@@ -32,7 +32,7 @@ const AddStudentDialog = ({ onCancel, onSubmit, open, onClose, loading }) => {
       setClasses(list)
       setFetchLoading(false)
     })()
-  }, [])
+  }, [open])
 
   const handleSubmit = () => {
     if (selectedClass === null) {
@@ -43,7 +43,7 @@ const AddStudentDialog = ({ onCancel, onSubmit, open, onClose, loading }) => {
   }
 
   return (
-    <PrimaryModal open={open} onClose={onClose}>
+    <PrimaryModal keepMounted={false}  open={open} onClose={onClose}>
       <Box sx={{ width: "100%", height: "100%", display: "grid", placeItems: "center" }}>
         <Grid container spacing={2}>
           <Grid size={12}>

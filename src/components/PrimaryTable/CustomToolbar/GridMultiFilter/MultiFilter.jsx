@@ -48,6 +48,7 @@ const MultiFilter = ({ anchor, onClose }) => {
 
   const handleResetFields = () => {
     setCurrentFields([filterableCols[0]])
+    setFilterFieldAmount(1)
     onClose()
   }
 
@@ -72,7 +73,7 @@ const MultiFilter = ({ anchor, onClose }) => {
           operators={operators}
           filterableCols={filterableCols}
         />
-        <Paper
+        <Box
           sx={{
             height: "50px",
             display: "flex",
@@ -86,7 +87,7 @@ const MultiFilter = ({ anchor, onClose }) => {
           <Button onClick={handleResetFields} startIcon={<Clear />}>
             Đặt lại
           </Button>
-        </Paper>
+        </Box>
       </Stack>
     </Popover>
   )

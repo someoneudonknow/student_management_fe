@@ -23,6 +23,12 @@ export const TEACHER_FIELDS = [
     flex: 1,
     valueFormatter: (params) => (params === "Male" ? "Nam" : "Nữ"),
   },
+ {
+    field: "Subject",
+    headerName: "Môn dạy",
+    flex: 1,
+    valueFormatter: (params) => params?.name ? params.name : "Chưa chọn môn dạy",
+  },
   {
     field: "birthday",
     headerName: "Ngày sinh",

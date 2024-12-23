@@ -4,9 +4,7 @@ import {
   CardActionArea,
   CardContent,
   IconButton,
-  MenuItem,
   Paper,
-  Select,
   Typography,
   Menu,
   ListItemButton,
@@ -50,8 +48,10 @@ const StudentCard = ({ student, isLeader, onRoleUpdate, onRemoveFromClassClick, 
     })
   }
 
-  //TODO: handle remove student from class
-  const handleRemoveStudentFromClass = (student) => {}
+  //TODO(0): handle remove student from class
+  const handleRemoveStudentFromClass = (student) => {
+
+  }
 
   return (
     <Card
@@ -70,7 +70,6 @@ const StudentCard = ({ student, isLeader, onRoleUpdate, onRemoveFromClassClick, 
         open={!!changeRoleMenuAnchor}
         onClose={handleChangeRoleMenuClose}
         anchorEl={changeRoleMenuAnchor}
-        disableScrollLock
       >
         <List>
           <ListItemButton onClick={() => handleStudentRoleChange(STUDENT_ROLE)}>
@@ -109,9 +108,6 @@ const StudentCard = ({ student, isLeader, onRoleUpdate, onRemoveFromClassClick, 
       >
         <IconButton onClick={handleChangeRoleMenuOpen} color="info">
           <Edit />
-        </IconButton>
-        <IconButton color="error">
-          <Remove />
         </IconButton>
       </Paper>
       <CardActionArea sx={{ height: "100%", width: "100%" }}>
