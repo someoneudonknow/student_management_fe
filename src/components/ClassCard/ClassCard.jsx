@@ -64,10 +64,12 @@ const ClassCard = ({ classInfo, onClick, onRemoveClick, onEditClick }) => {
           {classInfo.name}
         </Typography>
         <Typography mt={1} variant="body2" sx={{ fontSize: "17px" }}>
-          <strong>Sỉ số: </strong>{classInfo.size} học sinh
+          <strong>Sỉ số: </strong>
+          {classInfo.size} học sinh
         </Typography>
         <Typography mt={1} variant="body2" sx={{ fontSize: "17px" }}>
-          <strong>Khối: </strong>{classInfo.grade}
+          <strong>Khối: </strong>
+          {classInfo.grade}
         </Typography>
         {/* <Typography mt={1} variant="body2" sx={{ fontSize: "17px" }}>
           Giáo viên chủ nhiệm: {classManagerName}

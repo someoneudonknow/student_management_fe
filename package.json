@@ -30,8 +30,9 @@
     "react-hook-form": "^7.53.0",
     "react-router-dom": "^6.26.2",
     "recharts": "^2.15.0",
+    "uuid": "^11.0.3",
     "selenium-webdriver": "^4.25.0",
-    "uuid": "^11.0.3"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
