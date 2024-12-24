@@ -10,6 +10,7 @@ import CreateSchedule from "../views/Schedule/CreateSchedule/CreateSchedule.jsx"
 import AllClasses from "../views/Class/AllClasses/AllClasses.jsx"
 import ClassInfo from "../views/Class/ClassInfo/ClassInfo.jsx"
 import Dashboard from "../views/Dashboard/Dashboard.jsx"
+import UpdateScore from "../components/UpdateScoreOfClass/UpdateScore.jsx"
 
 const AdminRoutes = () => {
   return (
@@ -32,6 +33,7 @@ const AdminRoutes = () => {
         <Route path="classes" element={<AllClasses />} />
         <Route path="subject" element={<AllSubjects />} />
         <Route path="schedule" element={<CreateSchedule />} />
+        <Route path="classes/:classId/score" element={<UpdateScore />} />
       </Route>
     </Routes>
   )

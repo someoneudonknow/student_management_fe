@@ -29,8 +29,8 @@ const CreateScheduleTable = () => {
     const subjectRes = await subjectService.getSubjects()
     const subjects = subjectRes.data.metadata
 
-    const classRes = await classService.get()
-    const classes = classRes.data.metadata.list
+    const classRes = await classService.getClasses()
+    const classes = classRes.data.metadata
     classes.sort((a, b) => a.name.localeCompare(b.name))
     setList(classes)
 
@@ -57,6 +57,8 @@ const CreateScheduleTable = () => {
   const fetchSubSchedules = async () => {
     const schedulesRes = await scheduleService.getTeacherSchedules()
     const teachersRes = await teacherService.getAllTeachers({ page: 1, limit: 20 })
+
+    console.log("schedulesRes: ", schedulesRes)
 
     setSchedules(schedulesRes.data.metadata)
     setList(teachersRes.data.metadata.list)
@@ -155,7 +157,7 @@ const CreateScheduleTable = () => {
     }
   }
 
-  const handleSetClass = async (e) => {
+  const handleSetSelect = async (e) => {
     setCurrentSelect(e.target.value)
     const subjectRes = await subjectService.getSubjects()
     const subjects = subjectRes.data.metadata
@@ -183,6 +185,8 @@ const CreateScheduleTable = () => {
   useEffect(() => {
     const currentSchedule = schedules?.[currentSelect] ?? []
 
+    // console.log("current schedules: ", currentSchedule)
+
     let result = Array.from({ length: 5 }, () => new Array(days.length))
     if (currentSchedule.length > 0) {
       for (const schedule of currentSchedule) {
@@ -193,8 +197,16 @@ const CreateScheduleTable = () => {
       }
     }
 
+    // console.log("result: ", result)
+
     setScheduling(result)
   }, [currentSelect, schedules])
+
+  // console.log("scheduling: ", scheduling)
+  console.log("list: ", list)
+  console.log("currentSelect: ", currentSelect)
+  console.log("scheduling: ", scheduling)
+  console.log("schedulés: ", schedules)
 
   return (
     <Box component="div" sx={{ p: 3 }}>
@@ -222,7 +234,7 @@ const CreateScheduleTable = () => {
           <Select
             variant="outlined"
             sx={{ width: "100%" }}
-            onChange={handleSetClass}
+            onChange={handleSetSelect}
             value={currentSelect}
             defaultValue={list?.[0]?.id}
           >

@@ -122,3 +122,8 @@ export const getClassRole = (classRole) => {
 
   return classRoles?.[classRole] || "Không xác định"
 }
+
+export const scoreValidate = (score) => {
+  if (score < 0 || score > 10) return null
+  return parseFloat(score.toFixed(2))
+}

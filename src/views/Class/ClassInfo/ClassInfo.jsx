@@ -1,6 +1,6 @@
-import { Box, IconButton, Paper, Stack, Toolbar, Typography } from "@mui/material"
+import { Box, IconButton, Paper, Button, Stack, Toolbar, Typography } from "@mui/material"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import SearchBox from "../../../components/SearchBox/SearchBox"
 import StudentService from "../../../services/StudentService"
 import { generateODataQueryString } from "../../../utils"
@@ -19,6 +19,7 @@ const ClassInfo = () => {
   const originalStudents = useRef([])
   const [classStudents, setClassStudents] = useState([])
   const [classManagerHover, setClassManagerHover] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!classId) return
@@ -103,13 +104,17 @@ const ClassInfo = () => {
     }
   }
 
+  const handleUpdateScore = () => {
+    navigate("score")
+  }
+
   const handleClassManagerChange = async (teacher) => {
     try {
       await classServiceRef.current.updateClassManager(classId, teacher.id)
-     enqueueSnackbar("Cập nhật thành công", { variant: "success" })
+      enqueueSnackbar("Cập nhật thành công", { variant: "success" })
     } catch (error) {
-     console.log(error)
-     enqueueSnackbar(error.message, { variant: "error" })
+      console.log(error)
+      enqueueSnackbar(error.message, { variant: "error" })
     }
   }
 
@@ -129,29 +134,42 @@ const ClassInfo = () => {
           justifyContent="flex-start"
           alignItems="flex-start"
           flexDirection="column"
+          width="100%"
         >
           <Typography mb={1} variant="h5" textAlign="center">
             Giáo viên chủ nhiệm
           </Typography>
           <Box
             component="div"
-            onMouseEnter={handleClassManagerHover}
-            onMouseLeave={handleClassManagerLeave}
-            sx={{
-              border: (theme) => `2px solid ${theme.palette.success.main}`,
-              borderRadius: "5px",
-              position: "relative",
-              p: 1,
-            }}
+            sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
           >
-            <TeacherSelectBox
-              defaultValue={currentClass?.class_manager}
+            <Box
+              component="div"
+              onMouseEnter={handleClassManagerHover}
+              onMouseLeave={handleClassManagerLeave}
               sx={{
-                heigth: "100%",
-                width: "300px",
+                border: (theme) => `2px solid ${theme.palette.success.main}`,
+                borderRadius: "5px",
+                position: "relative",
+                p: 1,
               }}
-              onChange={handleClassManagerChange}
-            />
+            >
+              <TeacherSelectBox
+                defaultValue={currentClass?.class_manager}
+                sx={{
+                  heigth: "100%",
+                  width: "300px",
+                }}
+                onChange={handleClassManagerChange}
+              />
+            </Box>
+            <Button
+              variant="contained"
+              sx={{ marginRight: "16px", height: "46px", width: "160px" }}
+              onClick={handleUpdateScore}
+            >
+              Nhập điểm
+            </Button>
           </Box>
         </Box>
         {classStudents.length === 0 && (
