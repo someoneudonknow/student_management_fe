@@ -23,8 +23,12 @@ class ClassService extends BaseService {
     return await this.patch(`/${id}`, payload)
   }
 
+  async updateClassManager(classId, teacherId, payload) {
+    return await this.patch(`/${classId}/teachers/${teacherId}`, payload)
+  }
+
   async remove(id) {
-    return await this.get("/")
+    return await this.delete(`/${id}`)
   }
 }
 

@@ -6,7 +6,7 @@ import {
 import GridColumnManager from "./GridColumnManager/GridColumnManager"
 import GridMultiFilter from "./GridMultiFilter/GridMultiFilter"
 
-const CustomToolBar = () => {
+const CustomToolBar = ({onFilterChange}) => {
   return (
     <GridToolbarContainer
       sx={{
@@ -16,7 +16,7 @@ const CustomToolBar = () => {
       <GridColumnManager />
       <GridToolbarExport variant="contained" csvOptions={{ utf8WithBom: true }} />
       <GridToolbarDensitySelector />
-      {/* <GridMultiFilter /> */}
+      <GridMultiFilter onFilterChange={onFilterChange} />
     </GridToolbarContainer>
   )
 }

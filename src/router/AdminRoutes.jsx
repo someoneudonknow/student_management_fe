@@ -9,6 +9,8 @@ import AllSubjects from "../views/Subject/AllSubjects/AllSubjects"
 import CreateSchedule from "../views/Schedule/CreateSchedule/CreateSchedule.jsx"
 import AllClasses from "../views/Class/AllClasses/AllClasses.jsx"
 import ClassInfo from "../views/Class/ClassInfo/ClassInfo.jsx"
+import Dashboard from "../views/Dashboard/Dashboard.jsx"
+import UpdateScore from "../components/UpdateScoreOfClass/UpdateScore.jsx"
 
 const AdminRoutes = () => {
   return (
@@ -21,15 +23,17 @@ const AdminRoutes = () => {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="student" />} />
+        <Route index element={<Navigate to="dashboard" />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="student" element={<AllStudents />} />
         <Route path="student/create" element={<CreateStudent />} />
         <Route path="teacher" element={<AllTeacher />} />
         <Route path="teacher/create" element={<CreateTeacher />} />
         <Route path="classes/:classId" element={<ClassInfo />} />
-        <Route exact path="classes" element={<AllClasses />} />
+        <Route path="classes" element={<AllClasses />} />
         <Route path="subject" element={<AllSubjects />} />
         <Route path="schedule" element={<CreateSchedule />} />
+        <Route path="classes/:classId/score" element={<UpdateScore />} />
       </Route>
     </Routes>
   )

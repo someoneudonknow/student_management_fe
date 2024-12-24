@@ -5,13 +5,13 @@ import SearchBox from "../../../components/SearchBox/SearchBox"
 import { Add, Delete, Edit } from "@mui/icons-material"
 import PrimaryTable from "../../../components/PrimaryTable/PrimaryTable"
 import useServerPagination from "../../../hooks/useServerPagination"
-import useStudentCRUD from "../../../hooks/useStudentCRUD"
 import { useMemo, useState } from "react"
-import { TEACHER_FIELDS } from "./constants/index.js"
+import { TEACHER_FIELDS } from "./constants/index.jsx"
 import { GridActionsCellItem } from "@mui/x-data-grid"
 import TeacherService from "../../../services/TeacherService.js"
 import useTeacherCRUD from "../../../hooks/useTeacherCRUD.js"
 import EditTeacherFormDialog from "../../../components/EditTeacherFormDialog/EditTeacherFormDialog.jsx"
+import { generateODataQueryString } from "../../../utils/index.js"
 
 const AllTeachers = () => {
   const navigate = useNavigate()
@@ -20,14 +20,31 @@ const AllTeachers = () => {
   const [deleteConfirmDialogOpen, setDeleteConfirmDialogOpen] = useState(false)
   const [selectedRowIds, setSelectedRowIds] = useState([])
   const { loading, deleteTeachers, updateTeacher } = useTeacherCRUD()
-  const { props, rows, setRows } = useServerPagination({
-    fetchDataFunc: async (limit, page) => {
+  const { props, rows, setRows, setFilterObj } = useServerPagination({
+    fetchDataFunc: async (limit, page, filterObj) => {
+      const skip = (page - 1) * limit
+
+      filterObj.skip = skip
+      filterObj.top = limit
+
+      const filterQuery = generateODataQueryString(filterObj)
       const teacherService = new TeacherService()
-      const result = await teacherService.getAllTeachers({ page, limit })
+
+      const result = await teacherService.filterTeacher(filterQuery)
+
       return result.data.metadata
     },
   })
 
+  const handleFilterChange = (filtersObj) => {
+    if(!filtersObj) {
+      setFilterObj({})
+      return;
+    }
+
+    setFilterObj({ filters: filtersObj })
+  }
+  
   const TEACHER_FIELDS_COLUMNS = useMemo(
     () => [
       ...TEACHER_FIELDS,
@@ -75,14 +92,14 @@ const AllTeachers = () => {
     }
   }
 
-  const handleEditTeacher = async (id, payload) => {
+  const handleEditTeacher = async (id, payload, originalData) => {
     await updateTeacher({ id, teacherData: payload }, ({ data: { metadata } }) => {
       setRows((prev) => {
         const clonedTeachersArr = [...prev]
         const foundIndex = clonedTeachersArr.findIndex((s) => s.id === metadata.id)
 
         if (foundIndex !== -1) {
-          clonedTeachersArr[foundIndex] = metadata
+          clonedTeachersArr[foundIndex] = {...metadata, Subject: originalData.subject}
         }
 
         return clonedTeachersArr
@@ -112,6 +129,22 @@ const AllTeachers = () => {
     navigate("/admin/teacher/create")
   }
 
+ const onSearchChange = (text) => {
+    setFilterObj({
+      ...(text.trim() !== "" && {
+        filters: {
+          or: [
+            { function: "substringof", args: [text.trim(), "id"] },
+            { function: "substringof", args: [text.trim(), "first_name"] },
+            { function: "substringof", args: [text.trim(), "last_name"] },
+            { function: "substringof", args: [text.trim(), "email"] },
+            { function: "substringof", args: [text.trim(), "phone_number"] },
+          ],
+        },
+      }),
+    })
+  }
+
   return (
     <Box p={1} component="div" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <ConfirmDialog
@@ -134,7 +167,7 @@ const AllTeachers = () => {
       )}
       <Toolbar sx={{ justifyContent: "space-between" }} disableGutters py={3}>
         <Box>
-          <SearchBox sx={{ minWidth: "400px" }} label="Tìm kiếm giáo viên" />
+          <SearchBox onChange={onSearchChange} sx={{ minWidth: "400px" }} label="Tìm kiếm giáo viên" />
         </Box>
         <Stack>
           <Button startIcon={<Add />} variant="outlined" onClick={handleAddTeacherButtonClicked}>
@@ -152,6 +185,7 @@ const AllTeachers = () => {
         columns={TEACHER_FIELDS_COLUMNS}
         title="Thông tin giáo viên"
         autoPageSizeOnMount
+        onFilterChange={handleFilterChange}
         {...props}
       />
     </Box>

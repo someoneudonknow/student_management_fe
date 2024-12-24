@@ -1,15 +1,15 @@
-import { Box, Button, Divider, IconButton, Paper, Stack, Toolbar, Typography } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Box, IconButton, Paper, Button, Stack, Toolbar, Typography } from "@mui/material"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import SearchBox from "../../../components/SearchBox/SearchBox"
 import StudentService from "../../../services/StudentService"
 import { generateODataQueryString } from "../../../utils"
 import StudentCard from "../../../components/StudentCard/StudentCard"
-import { CurrencyYen, Edit } from "@mui/icons-material"
-import useStudentCRUD from "../../../hooks/useStudentCRUD"
+import { Edit, Menu } from "@mui/icons-material"
 import { LEADER_ROLE } from "../../../constants/studentRoles"
 import ClassService from "../../../services/ClassService"
 import { enqueueSnackbar } from "notistack"
+import TeacherSelectBox from "../../../components/TeacherSelectBox/TeacherSelectBox"
 
 const ClassInfo = () => {
   const { classId } = useParams()
@@ -19,6 +19,7 @@ const ClassInfo = () => {
   const originalStudents = useRef([])
   const [classStudents, setClassStudents] = useState([])
   const [classManagerHover, setClassManagerHover] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!classId) return
@@ -50,6 +51,12 @@ const ClassInfo = () => {
     })()
   }, [classId])
 
+  const classManager = useMemo(() => {
+    return currentClass?.class_manager
+      ? `${currentClass.class_manager.first_name} ${currentClass.class_manager.last_name}`
+      : "Chưa chọn giáo viên chủ nhiệm"
+  }, [currentClass?.class_manager])
+
   const handleClassManagerHover = () => {
     setClassManagerHover(true)
   }
@@ -73,11 +80,15 @@ const ClassInfo = () => {
     )
   }
 
-  const updateStudentInfo = (student) => {
-    setClassStudents((prev) => prev.map((s) => (s.id === student.id ? student : s)))
-    originalStudents.current = originalStudents.current.map((s) =>
-      s.id === student.id ? student : s,
-    )
+  const updateClass = async (data) => {
+    try {
+      await classServiceRef.current.update(classId, data)
+
+      enqueueSnackbar("Cập nhật thành công", { variant: "success" })
+    } catch (e) {
+      console.log(e)
+      enqueueSnackbar("Cập nhật thất bại", { variant: "error" })
+    }
   }
 
   const handleStudentRoleUpdate = async (student, role, done) => {
@@ -86,88 +97,106 @@ const ClassInfo = () => {
         class_leader: student.id,
       }
 
-      try {
-        await classServiceRef.current.update(classId, data)
+      await updateClass(data)
 
-        setCurrentClass((prev) => ({ ...prev, class_leader: student.id }))
-        enqueueSnackbar("Cập nhật thành công", { variant: "success" })
-        done()
-      } catch (e) {
-        console.log(e)
-        enqueueSnackbar("Cập nhật thất bại", { variant: "error" })
-      }
+      setCurrentClass((prev) => ({ ...prev, class_leader: student.id }))
+      done()
     }
   }
 
-  //TODO: handle edit class manager
-  const handleClassManagerEdit = () => {}
+  const handleUpdateScore = () => {
+    navigate("score")
+  }
+
+  const handleClassManagerChange = async (teacher) => {
+    try {
+      await classServiceRef.current.updateClassManager(classId, teacher.id)
+      enqueueSnackbar("Cập nhật thành công", { variant: "success" })
+    } catch (error) {
+      console.log(error)
+      enqueueSnackbar(error.message, { variant: "error" })
+    }
+  }
 
   return (
-    <Box p={1}>
-      <Toolbar disableGutters sx={{ justifyContent: "space-between" }} py={3}>
-        <Box>
-          <SearchBox onChange={handleSearchChange} label="Tìm học sinh trong lớp" />
-        </Box>
-      </Toolbar>
-      <Box display="flex" mt={2} mb={2} justifyContent="flex-start">
+    <>
+      <Box p={1}>
+        <Toolbar disableGutters sx={{ justifyContent: "space-between" }} py={3}>
+          <Box>
+            <SearchBox onChange={handleSearchChange} label="Tìm học sinh trong lớp" />
+          </Box>
+        </Toolbar>
         <Box
-          component="div"
-          onMouseEnter={handleClassManagerHover}
-          onMouseLeave={handleClassManagerLeave}
-          sx={{
-            border: (theme) => `2px solid ${theme.palette.success.main}`,
-            borderRadius: "5px",
-            position: "relative",
-            p: 1,
-            ml: 1,
-          }}
+          display="inline-flex"
+          mt={2}
+          ml={1}
+          mb={2}
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          flexDirection="column"
+          width="100%"
         >
-          {classManagerHover && (
-            <Paper
-              sx={{
-                position: "absolute",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                inset: 0,
-                zIndex: 1,
-                px: 2,
-              }}
-            >
-              <IconButton color="info">
-                <Edit />
-              </IconButton>
-            </Paper>
-          )}
-          <Typography variant="h5" textAlign="center">
+          <Typography mb={1} variant="h5" textAlign="center">
             Giáo viên chủ nhiệm
           </Typography>
+          <Box
+            component="div"
+            sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
+          >
+            <Box
+              component="div"
+              onMouseEnter={handleClassManagerHover}
+              onMouseLeave={handleClassManagerLeave}
+              sx={{
+                border: (theme) => `2px solid ${theme.palette.success.main}`,
+                borderRadius: "5px",
+                position: "relative",
+                p: 1,
+              }}
+            >
+              <TeacherSelectBox
+                defaultValue={currentClass?.class_manager}
+                sx={{
+                  heigth: "100%",
+                  width: "300px",
+                }}
+                onChange={handleClassManagerChange}
+              />
+            </Box>
+            <Button
+              variant="contained"
+              sx={{ marginRight: "16px", height: "46px", width: "160px" }}
+              onClick={handleUpdateScore}
+            >
+              Nhập điểm
+            </Button>
+          </Box>
         </Box>
+        {classStudents.length === 0 && (
+          <Typography variant="body1" textAlign="center">
+            Không có học sinh trong lớp này
+          </Typography>
+        )}
+        {classStudents.length > 0 && (
+          <Stack
+            direction="row"
+            justifyContent="space-around"
+            flexWrap="wrap"
+            rowGap={2}
+            columnGap={2}
+          >
+            {classStudents.map((student) => (
+              <StudentCard
+                isLeader={currentClass.class_leader === student.id}
+                onRoleUpdate={handleStudentRoleUpdate}
+                key={student.id}
+                student={student}
+              />
+            ))}
+          </Stack>
+        )}
       </Box>
-      {classStudents.length === 0 && (
-        <Typography variant="body1" textAlign="center">
-          Không có học sinh trong lớp này
-        </Typography>
-      )}
-      {classStudents.length > 0 && (
-        <Stack
-          direction="row"
-          justifyContent="space-around"
-          flexWrap="wrap"
-          rowGap={2}
-          columnGap={2}
-        >
-          {classStudents.map((student) => (
-            <StudentCard
-              isLeader={currentClass.class_leader === student.id}
-              onRoleUpdate={handleStudentRoleUpdate}
-              key={student.id}
-              student={student}
-            />
-          ))}
-        </Stack>
-      )}
-    </Box>
+    </>
   )
 }
 

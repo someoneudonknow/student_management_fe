@@ -17,6 +17,7 @@ import {
 } from "../../constants/regex"
 import { enqueueSnackbar } from "notistack"
 import TeacherService from "../../services/TeacherService"
+import SubjectsSelectionBox from "../SubjectsSelectionBox/SubjectsSelectionBox"
 
 const CreateTeacher = () => {
   const { control, handleSubmit } = useForm()
@@ -35,8 +36,10 @@ const CreateTeacher = () => {
       gender: values.gender,
       birthday: values.birthday.toDate().toString(),
       first_day_of_work: values.firstDayOfWork.toDate().toString(),
+      subject: values.subject.id,
     }
 
+    console.log(data)
     try {
       const teacherService = new TeacherService()
       await teacherService.createTeacher(data)
@@ -105,6 +108,16 @@ const CreateTeacher = () => {
                 message: "Vui lòng nhập số điện thoại hợp lệ",
               },
             }}
+          />
+        </Grid>
+        <Grid item size={12}>
+          <SubjectsSelectionBox
+            name="subject"
+            control={control}
+            rules={{
+              required: "Vui lòng chọn môn học"
+            }}
+            label="Môn học phụ trách"
           />
         </Grid>
         <Grid item="true" size={12}>

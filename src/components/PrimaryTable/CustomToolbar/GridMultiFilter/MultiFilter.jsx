@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react"
 import FilterSelection from "./FilterSelection"
 import { Add, Clear } from "@mui/icons-material"
 import FilterSelectionList from "./FilterSelectionList"
+import { v4 as uuidv4 } from 'uuid';
 
 const operator = {
   EQUALS: "eq",
@@ -23,31 +24,105 @@ const operators = [
   { text: "Lớn hơn hoặc bằng", value: operator.GREATER_THAN_OR_EQUALS },
 ]
 
-const MultiFilter = ({ anchor, onClose }) => {
-  const [filters, setFilter] = useState([])
-  const [currentFields, setCurrentFields] = useState([])
-  const [multiFilterMode, setMultiFilterMode] = useState("and")
-  const [filterFieldAmount, setFilterFieldAmount] = useState(1)
+const MultiFilter = ({ anchor, onClose, onFiltersChange }) => {
   const apiRef = useGridApiContext()
+  const [fields, setFields] = useState([])
+  const [multiFilterMode, setMultiFilterMode] = useState("and")
+
+  useEffect(() => {
+    const filter = buildFilter()
+    onFiltersChange?.(filter)
+  }, [fields, multiFilterMode])
+
+  const buildFilter = () => {
+    const validFields = fields.filter(field => field.value !== null && field.value !== '')
+    
+    if (validFields.length === 0) return null
+    
+    if (validFields.length === 1) {
+      return {
+        field: validFields[0].field,
+        operator: validFields[0].operator,
+        value: validFields[0].value
+      }
+    } else {
+      return {
+        [multiFilterMode]: validFields.map(field => ({
+          field: field.field,
+          operator: field.operator,
+          value: field.value
+        }))
+      }
+    }
+  }
+
+  const handleMultiFilterModeChange = (mode) => {
+    setMultiFilterMode(mode)
+  }
+
+  const getColumnType = (column) => {
+    if (column.type) return column.type
+    
+    if (column.valueGetter && column.valueGetter.toString().includes('new Date')) {
+      return 'date'
+    }
+    if (column.type === 'number' || column.valueFormatter?.toString().includes('parseInt')) {
+      return 'number'
+    }
+    
+    return 'string'
+  }
 
   const filterableCols = useMemo(() => {
-    if (apiRef.current?.getAllColumns && currentFields.length === 0) {
-      const filterableColumns = apiRef.current.getAllColumns().filter((c) => c.filterable)
+    if (apiRef.current?.getAllColumns) {
+      const filterableColumns = apiRef.current
+        .getAllColumns()
+        .filter((c) => c.filterable !== false)
+        .map(col => ({
+          ...col,
+          type: getColumnType(col)
+        }))
 
-      setCurrentFields([filterableColumns[0]])
+      if (fields.length === 0) {
+        setFields([{
+          id: uuidv4(),
+          field: filterableColumns[0]?.field,
+          operator: operators[0].value,
+          value: "",
+        }])
+      }
+      
       return filterableColumns
     }
     return []
-  }, [apiRef.current?.getAllColumns, apiRef.current])
+  }, [apiRef.current?.getAllColumns])
 
-  const handleAddField = () => {
-    setFilterFieldAmount((prev) => prev + 1)
+  const handleSelectionChange = (id, data) => {
+    setFields(prev => prev.map(f => f.id === id ? {id, ...data} : f))
   }
 
-  const handleFiltersChange = () => {}
+  const handleAddField = () => {
+    setFields((prev) => [...prev, {
+      id: uuidv4(),
+      field: filterableCols[0]?.field,
+      operator: operators[0].value,
+      value: "",
+    }])
+  }
+
+  const handleRemoveField = (id) => {
+    setFields((prev) => prev.filter((f) => f.id !== id))
+  }
 
   const handleResetFields = () => {
-    setCurrentFields([filterableCols[0]])
+    setFields([
+      {
+            id: uuidv4(),
+            field: filterableCols[0]?.field,
+            operator: operators[0].value,
+            value: "",
+      }
+    ])
     onClose()
   }
 
@@ -68,11 +143,15 @@ const MultiFilter = ({ anchor, onClose }) => {
         }}
       >
         <FilterSelectionList
-          fieldAmount={filterFieldAmount}
+          fields={fields}
           operators={operators}
           filterableCols={filterableCols}
+          onSelectionChange={handleSelectionChange}
+          onRemove={handleRemoveField}
+          onMultiFilterModeChange={handleMultiFilterModeChange}
+          multiFilterMode={multiFilterMode}
         />
-        <Paper
+        <Box
           sx={{
             height: "50px",
             display: "flex",
@@ -86,7 +165,7 @@ const MultiFilter = ({ anchor, onClose }) => {
           <Button onClick={handleResetFields} startIcon={<Clear />}>
             Đặt lại
           </Button>
-        </Paper>
+        </Box>
       </Stack>
     </Popover>
   )

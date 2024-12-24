@@ -14,20 +14,20 @@ import UserProvider from "./contexts/UserProvider/UserProvider"
 import { BrowserRouter } from "react-router-dom"
 
 createRoot(document.getElementById("root")).render(
-  //<StrictMode>
-  <BrowserRouter>
-    <LocalizationProvider dateAdapter={AdapterMoment}>
-      <ThemeProvider>
-        <SnackbarProvider
-          autoHideDuration={2000}
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        >
-          <UserProvider>
-            <App />
-          </UserProvider>
-        </SnackbarProvider>
-      </ThemeProvider>
-    </LocalizationProvider>
-  </BrowserRouter>,
-  //</StrictMode>,
+  <StrictMode>
+    <BrowserRouter>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
+        <ThemeProvider>
+          <SnackbarProvider
+            autoHideDuration={2000}
+            anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <UserProvider>
+              <App />
+            </UserProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </LocalizationProvider>
+    </BrowserRouter>
+  </StrictMode>,
 )

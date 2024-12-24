@@ -43,6 +43,15 @@ const AllStudents = () => {
     },
   })
 
+  const handleFilterChange = (filtersObj) => {
+    if(!filtersObj) {
+      setFilterObj({})
+      return;
+    }
+
+    setFilterObj({ filters: filtersObj })
+  }
+
   const STUDENT_INFO_COLUMNS = useMemo(
     () => [
       ...STUDENT_FIELDS,
@@ -223,6 +232,7 @@ const AllStudents = () => {
         </Stack>
       </Toolbar>
       <PrimaryTable
+        onFilterChange={handleFilterChange}
         rowSelectionModel={selectedRowIds}
         onDeleteColumns={handleDeleteStudentBtnClicked}
         onRowSelectionModelChange={handleRowSelectionChanged}

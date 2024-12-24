@@ -3,7 +3,7 @@ import { Button } from "@mui/material"
 import { useState } from "react"
 import MultiFilter from "./MultiFilter"
 
-const GridMultiFilter = () => {
+const GridMultiFilter = ({ onFilterChange }) => {
   const [anchor, setAnchor] = useState(null)
 
   const handleOpenMultiFilter = (e) => {
@@ -19,7 +19,7 @@ const GridMultiFilter = () => {
       <Button startIcon={<FilterList />} edge="end" onClick={handleOpenMultiFilter}>
         Bộ lọc
       </Button>
-      <MultiFilter anchor={anchor} onClose={handleCloseMultiFilter} />
+      <MultiFilter onFiltersChange={onFilterChange} anchor={anchor} onClose={handleCloseMultiFilter} />
     </>
   )
 }

@@ -7,7 +7,8 @@ import FormTextInput from "../FormTextInput/FormTextInput"
 import FormRadioGroup from "../FormRadioGroup/FormRadioGroup"
 import FormDatePicker from "../FormDatePicker/FormDatePicker"
 import { enqueueSnackbar } from "notistack"
-import { NOT_EMAIL_REGEX, PHONE_NUMBER_REGEX } from "../../constants/regex"
+import { NOT_EMAIL_REGEX, NOT_PHONE_NUMBER_REGEX, PHONE_NUMBER_REGEX } from "../../constants/regex"
+import SubjectsSelectionBox from "../SubjectsSelectionBox/SubjectsSelectionBox"
 
 const EditTeacherForm = ({ onCancel, onSubmit, initValue }) => {
   const { control, handleSubmit } = useForm({
@@ -20,6 +21,7 @@ const EditTeacherForm = ({ onCancel, onSubmit, initValue }) => {
       firstDayOfWork: initValue?.first_day_of_work ? moment(initValue.first_day_of_work) : null,
       phoneNumber: initValue?.phone_number,
       isRetired: initValue?.is_retired,
+      subject: initValue?.Subject ?? null
     },
   })
 
@@ -37,10 +39,11 @@ const EditTeacherForm = ({ onCancel, onSubmit, initValue }) => {
       birthday: values.birthday.toDate().toString(),
       first_day_of_work: values.firstDayOfWork.toDate().toString(),
       is_retired: values.isRetired,
+      subject: values.subject?.id
     }
 
     try {
-      onSubmit && (await onSubmit(initValue.id, data))
+      onSubmit && (await onSubmit(initValue.id, data, values))
     } catch (e) {
       enqueueSnackbar(e.message, { variant: "error" })
     }
@@ -109,11 +112,25 @@ const EditTeacherForm = ({ onCancel, onSubmit, initValue }) => {
             control={control}
             rules={{
               required: "Vui lòng nhập số điện thoại",
-              pattern: {
-                value: PHONE_NUMBER_REGEX,
-                message: "Vui lòng nhập số điện thoại hợp lệ",
+              validate: {
+                isPhoneNum: function (value) {
+                  if (value && PHONE_NUMBER_REGEX.test(value)) {
+                    return "Vui lòng nhập số điện thoại hợp lệ"
+                  }
+                  return true
+                }
               },
             }}
+          />
+        </Grid>
+        <Grid item size={12}>
+          <SubjectsSelectionBox
+            name="subject"
+            control={control}
+            rules={{
+              required: "Vui lòng chọn môn học"
+            }}
+            label="Môn học phụ trách"
           />
         </Grid>
         <Grid item="true" size={12}>

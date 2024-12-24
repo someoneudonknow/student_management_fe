@@ -23,6 +23,13 @@ export const TEACHER_FIELDS = [
     flex: 1,
     valueFormatter: (params) => (params === "Male" ? "Nam" : "Nữ"),
   },
+ {
+    field: "Subject",
+    headerName: "Môn dạy",
+    flex: 1,
+    valueFormatter: (params) => params?.name ? params.name : "Chưa chọn môn dạy",
+    filterable: false,
+  },
   {
     field: "birthday",
     headerName: "Ngày sinh",
@@ -47,5 +54,11 @@ export const TEACHER_FIELDS = [
     headerName: "Trạng thái",
     flex: 1,
     valueFormatter: (params) => (params ? "Đã nghỉ hưu" : "Đang dạy"),
+    filterable: false,
+    renderCell: (params) => (
+      <span style={{ color: params.value ? "red" : "green" }}>
+        {params.value ? "Đã nghỉ hưu" : "Đang dạy"}
+      </span>
+    ),
   },
 ]

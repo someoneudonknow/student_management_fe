@@ -6,3 +6,4 @@ export const NAME_NOT_INCLUDE_NUMBER_REGEX =
   /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÁẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲÝỴỶỸỷỳýỹ\s]+$/
 
 export const INTEGER_NUMBER_REGEX = /^[1-9]\d*$/
+export const NOT_PHONE_NUMBER_REGEX = /^[a-zA-Z\s]+$/

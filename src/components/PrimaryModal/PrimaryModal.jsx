@@ -1,6 +1,6 @@
 import { Backdrop, Box, Fade, Modal, Slide } from "@mui/material"
 
-const PrimaryModal = ({ backdrop, onClose, open, children, containerSx = {} }) => {
+const PrimaryModal = ({ backdrop, onClose, open, children, containerSx = {}, ...rest }) => {
   const backdropProps = backdrop
     ? {
         slots: { backdrop: Backdrop },
@@ -13,8 +13,8 @@ const PrimaryModal = ({ backdrop, onClose, open, children, containerSx = {} }) =
     : {}
 
   return (
-    <Modal open={open} onClose={onClose} closeAfterTransition {...backdropProps}>
-      <Fade in={open}>
+    <Modal open={open} onClose={onClose} {...backdropProps} {...rest}>
+      <Fade unmountOnExit in={open}>
         <Box
           sx={{
             borderRadius: 2,

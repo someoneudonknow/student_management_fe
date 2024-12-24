@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Unstable_NumberInput as BaseNumberInput } from "@mui/base/Unstable_NumberInput"
-import { styled } from "@mui/system"
+import { Box, styled } from "@mui/material"
 import RemoveIcon from "@mui/icons-material/Remove"
 import AddIcon from "@mui/icons-material/Add"
 
