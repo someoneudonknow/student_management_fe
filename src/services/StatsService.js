@@ -7,24 +7,28 @@ class StatsService extends BaseService {
     super(BASE_URL)
   }
 
-  async getStudentStats() {
-    return await this.get("/students")
+  async getAvailableYears() {
+    return await this.get("/available-years")
   }
 
-  async getScoreStats() {
-    return await this.get("/scores")
+  async getStudentStats(year) {
+    return await this.get("/students", { params: { year } })
+  }
+
+  async getScoreStats(year) {
+    return await this.get("/scores", { params: { year } })
   }
 
   async getCurrentSemesterStats() {
     return await this.get("/current-semester")
   }
 
-  async getRegressionData() {
-    return await this.get("/regression")
+  async getRegressionData(year) {
+    return await this.get("/regression", { params: { year } })
   }
 
-  async getSubjectPassRates() {
-    return await this.get("/subject-pass-rates")
+  async getSubjectPassRates(year) {
+    return await this.get("/subject-pass-rates", { params: { year } })
   }
 }
 

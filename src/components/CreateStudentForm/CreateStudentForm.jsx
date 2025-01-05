@@ -90,13 +90,13 @@ const CreateStudentForm = () => {
       sx={{ pb: "74px", position: "relative" }}
     >
       <Grid container spacing={2}>
-        <Grid
+        {/* <Grid
           size={{ xs: 12, md: 2 }}
           sx={{ display: "flex", justifyContent: "center", alignItems: "flex-start" }}
         >
-          {/* <AvatarChooser name="avatarChooser" control={control} rules={{ required: "Vui lòng chọn ảnh" }} /> */}
-        </Grid>
-        <Grid container spacing={2} size={{ xs: 12, md: 10 }}>
+          <AvatarChooser name="avatarChooser" control={control} rules={{ required: "Vui lòng chọn ảnh" }} /> */}
+        {/* </Grid> */}
+        <Grid container spacing={2} size={{ xs: 12, md: 12 }}>
           <Grid item size={6}>
             <FormTextInput
               control={control}

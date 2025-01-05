@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material"
+import { Box, Card, CardContent, Grid, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material"
 import { useEffect, useRef, useState } from "react"
 import {
   BarChart,
@@ -27,22 +27,44 @@ const Dashboard = () => {
   const [semesterStats, setSemesterStats] = useState(null)
   const [regressionData, setRegressionData] = useState(null)
   const [subjectPassRates, setSubjectPassRates] = useState(null)
+  const [selectedYear, setSelectedYear] = useState(null)
+  const [availableYears, setAvailableYears] = useState([])
+
+  useEffect(() => {
+    const fetchAvailableYears = async () => {
+      try {
+        const response = await statsServiceRef.current.getAvailableYears()
+        setAvailableYears(response.data.metadata)
+        // Set the first year with complete semesters as default
+        const defaultYear = response.data.metadata.find(y => y.hasCompleteSemesters)
+        if (defaultYear) {
+          setSelectedYear(defaultYear.year)
+        }
+      } catch (error) {
+        console.error("Error fetching available years:", error)
+      }
+    }
+
+    fetchAvailableYears()
+  }, [])
 
   useEffect(() => {
     const fetchAllStats = async () => {
+      if (!selectedYear) return
+
       try {
         const [
           studentStatsRes,
           scoreStatsRes,
           semesterStatsRes,
           regressionDataRes,
-          subjectPassRatesRes
+          subjectPassRatesRes,
         ] = await Promise.all([
-          statsServiceRef.current.getStudentStats(),
-          statsServiceRef.current.getScoreStats(),
+          statsServiceRef.current.getStudentStats(selectedYear),
+          statsServiceRef.current.getScoreStats(selectedYear),
           statsServiceRef.current.getCurrentSemesterStats(),
-          statsServiceRef.current.getRegressionData(),
-          statsServiceRef.current.getSubjectPassRates()
+          statsServiceRef.current.getRegressionData(selectedYear),
+          statsServiceRef.current.getSubjectPassRates(selectedYear),
         ])
 
         setStudentStats(studentStatsRes.data.metadata)
@@ -51,12 +73,12 @@ const Dashboard = () => {
         setRegressionData(regressionDataRes.data.metadata)
         setSubjectPassRates(subjectPassRatesRes.data.metadata)
       } catch (error) {
-        console.error('Error fetching stats:', error)
+        console.error("Error fetching stats:", error)
       }
     }
 
     fetchAllStats()
-  }, [])
+  }, [selectedYear])
 
   const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
     const RADIAN = Math.PI / 180
@@ -79,9 +101,28 @@ const Dashboard = () => {
 
   return (
     <Box p={3}>
-      <Typography variant="h4" gutterBottom>
-        Thống kê
-      </Typography>
+      <Box mb={3} display="flex" alignItems="center" gap={2}>
+        <Typography variant="h4">Thống kê</Typography>
+        <FormControl variant="outlined" size="small" style={{ minWidth: 200 }}>
+          <InputLabel>Năm học</InputLabel>
+          <Select
+            value={selectedYear || ''}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            label="Năm học"
+          >
+            {availableYears.map((year) => (
+              <MenuItem 
+                key={year.year} 
+                value={year.year}
+                disabled={!year.hasCompleteSemesters}
+              >
+                {`${year.year}-${year.year + 1}`}
+                {!year.hasCompleteSemesters && " (Chưa đủ dữ liệu)"}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card>
@@ -149,12 +190,11 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Thống kê học kỳ {semesterStats?.semester} năm học{" "}
-                {semesterStats?.schoolYear}
+                Thống kê học kỳ {semesterStats?.semester} năm học {semesterStats?.schoolYear}
               </Typography>
               <Box height={300}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -178,7 +218,7 @@ const Dashboard = () => {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12}>
           <Card>
@@ -217,16 +257,18 @@ const Dashboard = () => {
                       Môn học có tỷ lệ đạt cao nhất:
                     </Typography>
                     <Typography variant="body1" color="primary">
-                      {subjectPassRates?.highestPassRate?.subject}: {subjectPassRates?.highestPassRate?.passRate}%
-                      ({subjectPassRates?.highestPassRate?.totalStudents} học sinh)
+                      {subjectPassRates?.highestPassRate?.subject}:{" "}
+                      {subjectPassRates?.highestPassRate?.passRate}% (
+                      {subjectPassRates?.highestPassRate?.totalStudents} học sinh)
                     </Typography>
                     <Box mt={2} />
                     <Typography variant="subtitle1" gutterBottom>
                       Môn học có tỷ lệ đạt thấp nhất:
                     </Typography>
                     <Typography variant="body1" color="error">
-                      {subjectPassRates?.lowestPassRate?.subject}: {subjectPassRates?.lowestPassRate?.passRate}%
-                      ({subjectPassRates?.lowestPassRate?.totalStudents} học sinh)
+                      {subjectPassRates?.lowestPassRate?.subject}:{" "}
+                      {subjectPassRates?.lowestPassRate?.passRate}% (
+                      {subjectPassRates?.lowestPassRate?.totalStudents} học sinh)
                     </Typography>
                   </Box>
                 </Grid>
@@ -244,7 +286,8 @@ const Dashboard = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={4}>
                   <Typography variant="subtitle1" align="center" gutterBottom>
-                    Điểm trung bình 2 lần 15' vs Điểm TB (r = {regressionData?.correlations?.quarterPoints})
+                    Điểm trung bình 2 lần 15' vs Điểm TB (r ={" "}
+                    {regressionData?.correlations?.quarterPoints})
                   </Typography>
                   <Box height={250}>
                     <ResponsiveContainer width="100%" height="100%">
@@ -257,7 +300,12 @@ const Dashboard = () => {
                         }}
                       >
                         <CartesianGrid />
-                        <XAxis type="number" dataKey="x" name="Điểm trung bình 2 lần 15'" domain={[0, 10]}>
+                        <XAxis
+                          type="number"
+                          dataKey="x"
+                          name="Điểm trung bình 2 lần 15'"
+                          domain={[0, 10]}
+                        >
                           <Label value="Điểm trung bình 2 lần 15'" offset={0} position="bottom" />
                         </XAxis>
                         <YAxis type="number" dataKey="y" name="Điểm TB" domain={[0, 10]}>
