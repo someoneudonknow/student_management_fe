@@ -24,7 +24,7 @@ class ScheduleService extends BaseService {
   }
 
   async getSubjectSchedule() {
-    return await this.get("/teachers")
+    return await this.patch("/teachers")
   }
 }
 
