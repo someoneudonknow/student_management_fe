@@ -56,9 +56,9 @@ const CreateScheduleTable = () => {
 
   const fetchSubSchedules = async () => {
     const schedulesRes = await scheduleService.getTeacherSchedules()
-    const teachersRes = await teacherService.getAllTeachers({ page: 1, limit: 20 })
+    const teachersRes = await teacherService.getAllTeachers({ page: 1, limit: 100 })
 
-    console.log("schedulesRes: ", schedulesRes)
+    // console.log("schedulesRes: ", schedulesRes)
 
     setSchedules(schedulesRes.data.metadata)
     setList(teachersRes.data.metadata.list)
@@ -94,6 +94,10 @@ const CreateScheduleTable = () => {
     } catch (error) {
       enqueueSnackbar(error.message, { variant: "error" })
       return
+    }
+
+    if (!schedules[currentSelect]) {
+      schedules[currentSelect] = []
     }
 
     const findSchedulingIdx = schedules[currentSelect]?.findIndex(
@@ -203,10 +207,10 @@ const CreateScheduleTable = () => {
   }, [currentSelect, schedules])
 
   // console.log("scheduling: ", scheduling)
-  console.log("list: ", list)
-  console.log("currentSelect: ", currentSelect)
-  console.log("scheduling: ", scheduling)
-  console.log("schedulés: ", schedules)
+  // console.log("list: ", list)
+  // console.log("currentSelect: ", currentSelect)
+  // console.log("scheduling: ", scheduling)
+  // console.log("schedulés: ", schedules)
 
   return (
     <Box component="div" sx={{ p: 3 }}>

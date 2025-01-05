@@ -122,7 +122,7 @@ const UpdateScore = () => {
     fetchData()
   }, [curSemester, curSubject])
 
-  console.log("rows: ", rows)
+  // console.log("rows: ", rows)
 
   return (
     <Box p={1} component="div" sx={{ height: "100%", display: "flex", flexDirection: "column" }}>

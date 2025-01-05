@@ -126,6 +126,8 @@ const UploadFile = ({ open, handleCloseModal, classId, subjectId, semester, upda
     //update data by recall api to get data
     const scoresRes = await scoreService.getScoresOfClass(classId, subjectId, semester)
 
+    console.log(scoresRes.data.metadata)
+
     const scores = scoresRes.data.metadata.map((el) => {
       const result = {
         id: el.Student.id,
@@ -135,7 +137,7 @@ const UploadFile = ({ open, handleCloseModal, classId, subjectId, semester, upda
         quarter_point_2: el.quarter_point_2,
         period_point: el.period_point,
         final_exam_point: el.final_exam_point,
-        AGV_point: el.AGV_point,
+        AVG_point: el.AVG_point,
       }
 
       return result
